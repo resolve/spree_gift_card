@@ -1,6 +1,6 @@
 Spree::CheckoutController.class_eval do
 
-  durably_decorate :update, mode: 'soft', sha: '681470fc5d42ee53a76d275755a0bc10a86fc5c1' do
+  durably_decorate :update, mode: 'soft', sha: 'd16946874d2877fc533f256e223799374d9ff98d' do
     if @order.update_attributes(object_params)
       fire_event('spree.checkout.update')
 
@@ -9,7 +9,7 @@ Spree::CheckoutController.class_eval do
       end
 
       unless @order.next
-        flash[:error] = Spree.t(:payment_processing_failed)
+        flash[:error] = @order.errors.full_messages.join("\n")
         redirect_to checkout_state_path(@order.state) and return
       end
 
