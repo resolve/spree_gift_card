@@ -31,6 +31,23 @@ describe "Checkout", js: true do
       end
     end
 
+    it "updates when item added" do
+      fill_in "order[gift_code]", :with => "foobar"
+      click_button "Update"
+      page.should have_content("Gift code has been successfully applied to your order.")
+      within '#cart_adjustments' do
+        page.should have_content("Gift Card")
+        page.should have_content("-$19.99")
+      end
+
+      fill_in "order_line_items_attributes_0_quantity", :with => 2
+      click_button "Update"
+      within '#cart_adjustments' do
+        page.should have_content("Gift Card")
+        page.should have_content("-$25.00")
+      end
+    end
+
     it "cannot enter a gift code that was created after the order" do
       Spree::GiftCard.first.update_attribute(:created_at, 1.day.from_now)
       fill_in "order[gift_code]", :with => "foobar"
