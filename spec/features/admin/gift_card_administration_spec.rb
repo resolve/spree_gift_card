@@ -26,6 +26,7 @@ feature "Admin Gift Card Administration", js: true do
     fill_in 'gift_card[email]', with: 'spree@example.com'
     fill_in 'gift_card[name]', with: 'First Last'
     fill_in 'gift_card[note]', with: 'Test message.'
+    fill_in 'gift_card[expiration_date]', with: 1.day.from_now
     select2 '$50.00', from: 'Value'
     click_button 'Create'
     page.should have_content('You have successfully created the gift card.')
@@ -42,6 +43,7 @@ feature "Admin Gift Card Administration", js: true do
     fill_in 'gift_card[email]', with: 'example.com'
     fill_in 'gift_card[name]', with: 'First Last'
     fill_in 'gift_card[note]', with: 'Test message.'
+    fill_in 'gift_card[expiration_date]', with: 1.day.from_now
     select2 '$50.00', from: 'Value'
     click_button 'Create'
     page.should have_css('.field_with_errors #gift_card_email')
@@ -67,6 +69,7 @@ feature "Admin Gift Card Administration", js: true do
     fill_in 'gift_card[email]', with: 'spree@example.com'
     fill_in 'gift_card[name]', with: 'First Last'
     fill_in 'gift_card[note]', with: 'Test message.'
+    fill_in 'gift_card[expiration_date]', with: 1.day.from_now
     click_button 'Update'
     page.should have_content("Gift card \"First Last\" has been successfully updated!")
     within 'table.index' do

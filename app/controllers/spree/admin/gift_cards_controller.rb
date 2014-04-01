@@ -56,7 +56,7 @@ module Spree
       end
 
       def gift_card_params
-        params[object_name].permit(:email, :name, :note, :value, :variant_id)
+        params[object_name].permit(:email, :name, :note, :value, :variant_id, :expiration_date)
       end
 
     end

@@ -42,4 +42,15 @@
       <%= f.select :variant_id, @gift_card_variants.map { |v| [number_to_currency(v.price), v.id] }, {}, disabled: (f.object.present? && !f.object.new_record?), :class => 'select2' %>
     <% end %>
   </div>
+
+  <div class="clear"></div>
+
+  <div class="alpha five columns">
+    <%= f.field_container :expiration_date do %>
+      <%= f.label :expiration_date %>
+      <%= f.date_field :expiration_date, class: "fullwidth" %>
+      <%= f.error_message_on :expiration_date %>
+    <% end %>
+  </div>
+
 </div>
