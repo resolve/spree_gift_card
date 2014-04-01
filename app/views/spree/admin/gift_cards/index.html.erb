@@ -21,6 +21,7 @@
       <th><%= Spree.t(:email) %></th>
       <th><%= Spree.t(:name) %></th>
       <th><%= Spree.t(:note) %></th>
+      <th><%= Spree.t(:expiration_date) %></th>
       <th class="actions" width="100"></th>
     </tr>
   </thead>
@@ -33,6 +34,7 @@
         <td><%= card.email %></td>
         <td><%= card.name %></td>
         <td><%= card.note %></td>
+        <td><%= card.expiration_date.to_date.to_s(:long) %></td>
         <td class="actions">
           <%= link_to_edit card, :no_text => true if can?(:edit, card) %>
           &nbsp;

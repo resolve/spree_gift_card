@@ -1,5 +1,6 @@
 en:
   spree:
+    exipiration_date: Expiration Date
     apply: "Apply"
     back_to_gift_cards_list: "Back to Gift Cards List"
     buy_gift_card: "Buy gift card"
