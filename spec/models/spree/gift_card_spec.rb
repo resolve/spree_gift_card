@@ -8,7 +8,24 @@ describe Spree::GiftCard do
   it {should validate_presence_of(:email)}
   it {should validate_presence_of(:original_value)}
   it {should validate_presence_of(:name)}
-  it {should validate_presence_of(:expiration_date)}
+
+  context "when expiration_date isn't set" do
+    it "should set expiration to default" do
+      Timecop.freeze
+      card = Spree::GiftCard.create(email: "test@mail.com", name: "John", variant_id: create(:variant).id)
+      expect(card.expiration_date).to eq(Spree::GiftCard.default_expiration_date)
+      Timecop.return
+    end
+  end
+
+  context "when expiration_date is set" do
+    it "should leave expiration_date" do
+      Timecop.freeze
+      card = Spree::GiftCard.create(email: "test@mail.com", name: "John", variant_id: create(:variant).id, expiration_date: 2.days.from_now)
+      expect(card.expiration_date).to eq(2.days.from_now)
+      Timecop.return
+    end
+  end
 
   it "should generate code before create" do
     card = Spree::GiftCard.create(:email => "test@mail.com", :name => "John", :variant_id => create(:variant).id)
