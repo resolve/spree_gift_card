@@ -118,7 +118,7 @@ describe Spree::GiftCard do
         allow(gift_card).to receive(:expired?).and_return(false)
       end
 
-      it "returns false" do
+      it "returns true" do
         gift_card.apply(order).should be_true
       end
     end
