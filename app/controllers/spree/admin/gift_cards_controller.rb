@@ -5,6 +5,7 @@ module Spree
 
       def update
         @object.attributes = gift_card_params
+        @object.current_value = @object.original_value
         if params[:restrict_user]
           return unless handle_restricted_user
         end
@@ -19,6 +20,7 @@ module Spree
 
       def create
         @object.attributes = gift_card_params
+        @object.current_value = @object.original_value
         if params[:restrict_user]
           return unless handle_restricted_user
         end
@@ -56,7 +58,7 @@ module Spree
       end
 
       def gift_card_params
-        params[object_name].permit(:email, :name, :note, :value, :variant_id, :expiration_date)
+        params[object_name].permit(:email, :original_value, :name, :note, :value, :variant_id, :expiration_date)
       end
 
     end
