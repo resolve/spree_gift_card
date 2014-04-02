@@ -4,6 +4,6 @@ FactoryGirl.define do
     name 'Example User'
     variant
     line_item
-    expiration_date '04-01-2016'
+    expiration_date '2030-04-01'
   end
 end
