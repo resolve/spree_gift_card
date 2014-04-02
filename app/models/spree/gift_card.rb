@@ -21,8 +21,13 @@ module Spree
     before_validation :generate_code, on: :create
     before_validation :set_calculator, on: :create
     before_validation :set_values, on: :create
+    before_validation :set_expiration_date
 
     include Spree::Core::CalculatedAdjustments
+
+    def self.default_expiration_date
+      DateTime.current + Spree::Config.gc_default_expiration_days
+    end
 
     def apply(order)
       # Nothing to do if the gift card is already associated with the order
@@ -74,6 +79,12 @@ module Spree
     end
 
     private
+
+    def set_expiration_date
+      if self.expiration_date.blank?
+        self.expiration_date = Spree::GiftCard.default_expiration_date
+      end
+    end
 
     def is_valid_user?(user)
       if gc_user = self.user_id
