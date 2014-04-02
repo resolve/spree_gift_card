@@ -11,7 +11,7 @@ module Spree
         # Wrap the transaction script in a transaction so it is an atomic operation
         Spree::GiftCard.transaction do
           @gift_card = GiftCard.new(gift_card_params)
-          @gift_card.expiration_date = 3.months.from_now
+          @gift_card.expiration_date = Time.now + Spree::Config.gift_card_default_expiration_date_in_days.days
           @gift_card.save!
           # Create line item
           line_item = LineItem.new(quantity: 1)
