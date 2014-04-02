@@ -48,7 +48,7 @@
   <div class="alpha five columns">
     <%= f.field_container :expiration_date do %>
       <%= f.label :expiration_date %>
-      <%= f.date_field :expiration_date, class: "fullwidth" %>
+      <%= f.text_field :expiration_date, class: "datepicker fullwidth" %>
       <%= f.error_message_on :expiration_date %>
     <% end %>
   </div>
