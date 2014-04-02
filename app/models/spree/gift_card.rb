@@ -26,7 +26,7 @@ module Spree
     include Spree::Core::CalculatedAdjustments
 
     def self.default_expiration_date
-      DateTime.current + Spree::Config.gc_default_expiration_days
+      Spree::Config.gc_default_expiration_days.days.from_now
     end
 
     def apply(order)
