@@ -27,7 +27,7 @@ module Spree
     def apply(order)
       # Nothing to do if the gift card is already associated with the order
       return if order.gift_credit_exists?(self)
-      if is_valid_user?(order.user)
+      if is_valid_user?(order.user) && !expired?
         order.update!
         create_adjustment(Spree.t(:gift_card), order, order, true)
         order.update!
@@ -35,6 +35,10 @@ module Spree
       else
         false
       end
+    end
+
+    def expired?
+      DateTime.current > expiration_date
     end
 
     # Calculate the amount to be used when creating an adjustment

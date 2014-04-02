@@ -21,6 +21,28 @@ describe Spree::GiftCard do
     card.original_value.should_not be_nil
   end
 
+  describe '.expired?' do
+    let(:gift_card) { create(:gift_card) }
+
+    subject { gift_card.expired?}
+    context "when expiration_date is in the future" do
+      before do
+        allow(gift_card).to receive(:expiration_date).and_return(5.days.from_now)
+      end
+
+      specify{ expect(subject).to be_false}
+
+    end
+
+    context "when expiration_date is in the past" do
+      before do
+        allow(gift_card).to receive(:expiration_date).and_return(5.days.ago)
+      end
+
+      specify { expect(subject).to be_true }
+    end
+  end
+
   context '#activatable?' do
     let(:gift_card) { create(:gift_card, variant: create(:variant, price: 25)) }
     let(:user) { create(:user) }
@@ -75,6 +97,30 @@ describe Spree::GiftCard do
       order.update!
       gift_card.apply(order)
       order.adjustments.find_by_originator_id_and_originator_type(gift_card.id, gift_card.class.to_s).mandatory.should be_true
+    end
+
+    context "when gift card is expired" do
+      let(:order) { create(:order_with_totals) }
+
+      before do
+        allow(gift_card).to receive(:expired?).and_return(true)
+      end
+
+      it "returns false" do
+        gift_card.apply(order).should be_false
+      end
+    end
+
+    context "when gift card is not expired" do
+      let(:order) { create(:order_with_totals) }
+
+      before do
+        allow(gift_card).to receive(:expired?).and_return(false)
+      end
+
+      it "returns false" do
+        gift_card.apply(order).should be_true
+      end
     end
 
     context 'for order total larger than gift card amount' do
