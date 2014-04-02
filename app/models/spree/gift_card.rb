@@ -16,6 +16,7 @@ module Spree
     validates :email, email: true, presence: true
     validates :name,               presence: true
     validates :original_value,     presence: true
+    validates :expiration_date,    presence: true
 
     before_validation :generate_code, on: :create
     before_validation :set_calculator, on: :create

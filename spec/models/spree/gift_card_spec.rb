@@ -8,6 +8,7 @@ describe Spree::GiftCard do
   it {should validate_presence_of(:email)}
   it {should validate_presence_of(:original_value)}
   it {should validate_presence_of(:name)}
+  it {should validate_presence_of(:expiration_date)}
 
   it "should generate code before create" do
     card = Spree::GiftCard.create(:email => "test@mail.com", :name => "John", :variant_id => create(:variant).id)
