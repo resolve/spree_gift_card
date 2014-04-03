@@ -1,7 +1,7 @@
 module Spree
   module Admin
     class GiftCardsController < Spree::Admin::ResourceController
-      before_filter :find_gift_card_variants, :except => [:destroy]
+      before_filter :find_gift_card_variants, :except => [:restore, :void, :destroy]
 
       def update
         @object.attributes = gift_card_params
@@ -34,9 +34,32 @@ module Spree
         end
       end
 
+      def void
+        if @object.current_value > 0 && @object.update(current_value: 0)
+          flash[:success] = Spree.t(:gift_card_voided)
+          redirect_to admin_gift_cards_path
+        else
+          flash[:error] = Spree.t(:gift_card_void_failure)
+          redirect_to admin_gift_cards_path
+        end
+      end
+
+      def restore
+        if @object.current_value == 0 && @object.update(current_value: @object.original_value)
+          flash[:success] = Spree.t(:gift_card_restored)
+          redirect_to admin_gift_cards_path
+        else
+          flash[:error] = Spree.t(:gift_card_restore_failure)
+          redirect_to admin_gift_cards_path
+        end
+      end
+
       private
+
       def collection
-        Spree::GiftCard.order("created_at desc").page(params[:page]).per(Spree::Config[:orders_per_page])
+        consolidate_search_parameters
+        @search = Spree::GiftCard.ransack(params[:q])
+        @search.result.page(params[:page]).per(Spree::Config[:orders_per_page])
       end
 
       def handle_restricted_user
@@ -53,15 +76,21 @@ module Spree
         end
       end
 
+      def consolidate_search_parameters
+        if params[:sort_by] && params[:sort_direction]
+          params[:q] ||= {}
+          params[:q][:s] = "#{params[:sort_by]} #{params[:sort_direction]}"
+        end
+      end
+
       def find_gift_card_variants
         gift_card_product_ids = Product.not_deleted.where(is_gift_card: true).pluck(:id)
         @gift_card_variants = Variant.joins(:prices).where(["amount > 0 AND product_id IN (?)", gift_card_product_ids]).order("amount")
       end
 
       def gift_card_params
-        params[object_name].permit(:email, :original_value, :name, :note, :value, :variant_id, :expiration_date)
+        params[object_name].permit(:q, :email, :original_value, :name, :note, :value, :variant_id, :expiration_date)
       end
-
     end
   end
 end
