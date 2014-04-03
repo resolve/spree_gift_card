@@ -9,4 +9,13 @@ describe Spree::GiftCardMailer do
       mail.to.should == [gift_card.email]
     end
   end
+  describe ".gift_card_expiring" do
+    let(:gift_card) { create(:gift_card) }
+
+    it 'sends email to Gift Card Email' do
+      mail = Spree::GiftCardMailer.gift_card_expiring gift_card
+      mail.to.should == [gift_card.email]
+    end
+  end
+
 end
