@@ -29,6 +29,13 @@ module Spree
       Spree::Config.gc_default_expiration_days.days.from_now
     end
 
+    def self.sortable_attributes
+      [
+        ["Creation Date", "created_at"],
+        ["Expiration Date", "expiration_date"],
+      ]
+    end
+
     def apply(order)
       # Nothing to do if the gift card is already associated with the order
       return if order.gift_credit_exists?(self)
