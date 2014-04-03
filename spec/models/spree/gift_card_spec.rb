@@ -68,6 +68,14 @@ describe Spree::GiftCard do
     end
   end
 
+  context ".sortable_attributes" do
+    subject { described_class.sortable_attributes }
+
+    it { should have(2).items }
+    it { should include(["Creation Date", "created_at"]) }
+    it { should include(["Expiration Date", "expiration_date"]) }
+  end
+
   context '#activatable?' do
     let(:gift_card) { create(:gift_card, variant: create(:variant, price: 25)) }
     let(:user) { create(:user) }
