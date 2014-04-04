@@ -26,6 +26,8 @@ module Spree
     scope :expires_in, ->(days) { where("expiration_date >= ? and expiration_date <= ?",
       days.days.from_now.beginning_of_day, days.days.from_now.end_of_day) }
 
+    scope :active, -> () { where('expiration_date > ?', Time.now) }
+
     include Spree::Core::CalculatedAdjustments
 
     def self.default_expiration_date
