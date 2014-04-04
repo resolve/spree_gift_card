@@ -1,7 +1,13 @@
 en:
   gift_card_issued_subject: "You've been issued a gift card"
+  gift_card_expiration_subject: "Youre gift card is expiring soon!"
   spree:
     gift_card_mailer:
+      gift_card_expiring:
+        expiring_soon: "Your gift card is expiring soon!"
+        current: Current Value
+        expiration: Expiration Date
+        code: Redemption Code
       gift_card_issued:
         issued: "You've been issued a gift card!"
         current: Current Value
