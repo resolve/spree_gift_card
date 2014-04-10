@@ -2,6 +2,10 @@ en:
   gift_card_issued_subject: "You've been issued a gift card"
   gift_card_expiration_subject: "Youre gift card is expiring soon!"
   spree:
+    show_all_gc: "Show all gift certificates"
+    hide_expired: "Hide expired gift certificates"
+    expiration_date: "Expiration Date"
+    issue_date: "Issue date"
     gift_cards_show_all: "Show all Gift Certificates"
     gift_card_mailer:
       gift_card_expiring:
@@ -27,7 +31,7 @@ en:
     apply: "Apply"
     back_to_gift_cards_list: "Back to Gift Cards List"
     buy_gift_card: "Buy gift card"
-    current_value: "Current Value"
+    current_value: "Balance"
     gift_card: 'Gift Card'
     gift_cards: "Gift cards"
     gift_card_calculator: 'Gift Card Calculator'
