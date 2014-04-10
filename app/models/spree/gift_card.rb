@@ -26,6 +26,8 @@ module Spree
     scope :expires_in, ->(days) { where("expiration_date >= ? and expiration_date <= ?",
       days.days.from_now.beginning_of_day, days.days.from_now.end_of_day) }
 
+    scope :active, -> () { where('current_value != 0.0 AND expiration_date > ?', Time.now) }
+
     include Spree::Core::CalculatedAdjustments
 
     def self.default_expiration_date
@@ -86,6 +88,16 @@ module Spree
       current_value > 0 &&
       !UNACTIVATABLE_ORDER_STATES.include?(order.state) &&
       is_valid_user?(order.user)
+    end
+
+    def status
+      if self.current_value <= 0
+        :redeemed
+      elsif self.expired?
+        :expired
+      else
+        :active
+      end
     end
 
     private
