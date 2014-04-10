@@ -90,6 +90,16 @@ module Spree
       is_valid_user?(order.user)
     end
 
+    def status
+      if self.current_value <= 0
+        :redeemed
+      elsif self.expired?
+        :expired
+      else
+        :active
+      end
+    end
+
     private
 
     def set_expiration_date
