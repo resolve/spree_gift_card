@@ -5,4 +5,7 @@
   <td class="expiration-date"><%= gift_card.expiration_date.to_date %></td>
   <%= content_tag :td, Spree.t(gift_card.status), class: "state state-#{gift_card.status}" %>
   <td class="note"><%= gift_card.note %></td>
+  <td class="transfer">
+    <%= link_to Spree.t(:transfer_gift_card), [:transfer, gift_card], class: :btn %>
+  </td>
 <% end %>

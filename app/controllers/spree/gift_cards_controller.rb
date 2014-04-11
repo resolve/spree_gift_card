@@ -1,5 +1,7 @@
 module Spree
   class GiftCardsController < Spree::StoreController
+    before_filter :find_gift_card, only: [:update, :transfer]
+
     def new
       find_gift_card_variants
       @gift_card = GiftCard.new
@@ -14,6 +16,22 @@ module Spree
       @gift_cards.sort! do |a, b|
         comp = gc_sort_order[a.status] <=> gc_sort_order[b.status]
         comp.zero?? (b.expiration_date <=> a.expiration_date) : comp
+      end
+    end
+
+    def transfer
+    end
+
+    def update
+      if @gift_card.update_attributes transfer_params
+        flash[:success] = Spree.t(:successfully_transferred_gift_card,
+                                  email: transfer_params[:email])
+
+        Spree::GiftCardMailer.gift_card_issued(@gift_card).deliver
+
+        redirect_to gift_cards_path
+      else
+        render action: :transfer
       end
     end
 
@@ -50,6 +68,19 @@ module Spree
       @gift_card_variants = Variant.joins(:prices).where(["amount > 0 AND product_id IN (?)", gift_card_product_ids]).order("amount")
     end
 
+    def transfer_params
+      t_params = params.require(:gift_card).permit(:note, :email)
+      set_user_in_params t_params
+      t_params
+    end
+
+    def set_user_in_params params_hash
+      if email = params_hash[:email]
+        user = Spree::User.where(email: email).first
+        params_hash[:user_id] = user ? user.id : nil
+      end
+    end
+
     def gift_card_params
       params.require(:gift_card).permit(:email, :name, :note, :variant_id)
     end
@@ -60,6 +91,10 @@ module Spree
         redeemed: 2,
         expired: 3
       }
+    end
+
+    def find_gift_card
+      @gift_card = current_spree_user.gift_cards.where(id: params[:id]).first
     end
   end
 end
