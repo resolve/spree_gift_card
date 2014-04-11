@@ -1,9 +1,5 @@
 Spree::Core::Engine.routes.draw do
-  resources :gift_cards
-
-  resource :account, controller: 'users' do
-    resources :gift_cards
-  end
+  resources :gift_cards, except: [:edit]
 
   namespace :admin do
     resources :gift_cards do
