@@ -40,6 +40,7 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::UrlHelpers
   config.extend Spree::TestingSupport::AuthorizationHelpers::Request, :type => :feature # once spree updates this can be removed
   config.color = true
+  config.extend ControllerMacros, type: :controller
 
   # Set to false for running JS drivers.
   config.use_transactional_fixtures = false
