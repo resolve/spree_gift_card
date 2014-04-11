@@ -4,6 +4,61 @@ describe Spree::GiftCardsController do
   let(:user) { create :user}
   login
 
+  describe "get transfer" do
+    subject { get :transfer, id: card.id, use_route: :spree }
+    let!(:card) { create :gift_card, user: user }
+    it { should be_success }
+    it { should render_template :transfer }
+  end
+
+  describe "PUT update" do
+    subject { put :update,
+              id: card.id,
+              gift_card: { email: email, note: "sup heres a gc" },
+              use_route: :spree }
+
+    let(:email) { "recipitent@email.com"}
+    let!(:card) { create :gift_card, user: user }
+
+    it { should be_redirect }
+
+    it "has a success message" do
+      subject
+      flash[:success].should =~ /successfully sent gift card/
+    end
+
+    it "removes the gift card from the sender's account" do
+      expect{ subject }.to change{ user.gift_cards.count }.by( -1 )
+    end
+
+    it "sends an email to the recipitent notifying them they've received a gift card" do
+      mailer = double
+      mailer.should_receive(:deliver)
+
+      expect(Spree::GiftCardMailer).to receive(:gift_card_issued).
+        with(an_instance_of(Spree::GiftCard)).and_return(mailer)
+
+      subject
+    end
+
+    context "when the recipitent does have a matching user" do
+      let!(:recipitent) { create :user, email: email }
+
+      it "adds the gift card to the recipitent's account" do
+        expect{subject}.to change{recipitent.gift_cards.count}.by( 1 )
+      end
+    end
+
+    context "with invalid parameters" do
+      before { allow_any_instance_of(Spree::GiftCard).
+               to receive(:update_attributes).and_return(false) }
+
+      it "it re-renders the action" do
+        should render_template :transfer
+      end
+    end
+  end
+
   describe "GET index" do
     subject { get :index, use_route: :spree }
 

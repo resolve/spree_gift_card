@@ -1,7 +1,13 @@
 en:
-  gift_card_issued_subject: "You've been issued a gift card"
   gift_card_expiration_subject: "Youre gift card is expiring soon!"
   spree:
+    successfully_transferred_gift_card: "successfully sent gift card to %{email}"
+    gift_card_transfer_submit: "transfer gift card"
+    gift_card_confirm_transfer:
+      Are you sure you'd like to transfer this gift certificate? This action
+      cannot be undone.
+    gift_card_issued_subject: "You've been issued a gift card"
+    transfer_gift_card: "Transfer Gift Certificate"
     view_my_gift_certificates: "View my gift certificates"
     show_all_gc: "Show all gift certificates"
     hide_inactive: "Hide inactive gift certificates"
