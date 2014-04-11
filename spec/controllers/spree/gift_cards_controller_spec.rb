@@ -1,8 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe Spree::UsersController do
-  describe "GET gift_cards" do
-    subject { get :gift_cards, use_route: :spree }
+describe Spree::GiftCardsController do
+  let(:user) { create :user}
+  login
+
+  describe "GET index" do
+    subject { get :index, use_route: :spree }
 
     let!(:user) { create(:user) }
     let!(:gift_card) { create(:gift_card, user: user) }
@@ -10,11 +13,11 @@ describe Spree::UsersController do
 
     before { allow(controller).to receive(:current_spree_user).and_return(user) }
 
-    it { should render_template(:gift_cards) }
+    it { should render_template(:index) }
     it { should be_success }
 
     describe "sorting" do
-      subject { get :gift_cards, use_route: :spree, show_all: "true" }
+      subject { get :index, use_route: :spree, show_all: "true" }
 
       let!(:gift_card_2) { create :gift_card, user: user, expiration_date: Time.current + 1.year }
       let!(:redeemed_gc) { create :redeemed_gc, user: user }
@@ -38,7 +41,7 @@ describe Spree::UsersController do
     end
 
     context "when show_all query param is true" do
-      subject { get :gift_cards, show_all: "true",
+      subject { get :index, show_all: "true",
                 use_route: :spree }
 
       it "includes expired gift cards as well" do
