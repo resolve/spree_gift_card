@@ -38,6 +38,10 @@ module Spree
       [
         ["Creation Date", "created_at"],
         ["Expiration Date", "expiration_date"],
+        ["Redemption Code", "code"],
+        ["Current Balance", "current_value"],
+        ["Original Balance", "original_value"],
+        ["Note", "note"]
       ]
     end
 
