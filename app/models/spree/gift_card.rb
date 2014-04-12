@@ -50,7 +50,7 @@ module Spree
       return if order.gift_credit_exists?(self)
       if is_valid_user?(order.user) && !expired?
         order.update!
-        create_adjustment(Spree::GiftCard.model_name.human, order, order, true)
+        create_adjustment(Spree::GiftCard.model_name.human.titlecase, order, order, true)
         order.update!
         true
       else

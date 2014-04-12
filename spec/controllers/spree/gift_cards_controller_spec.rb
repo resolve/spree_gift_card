@@ -35,8 +35,8 @@ describe Spree::GiftCardsController do
       mailer = double
       mailer.should_receive(:deliver)
 
-      expect(Spree::GiftCardMailer).to receive(:gift_card_issued).
-        with(an_instance_of(Spree::GiftCard)).and_return(mailer)
+      expect(Spree::GiftCardMailer).to receive(:gift_card_transferred).
+        with(an_instance_of(Spree::GiftCard), user.email).and_return(mailer)
 
       subject
     end
