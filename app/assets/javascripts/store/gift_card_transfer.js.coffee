@@ -7,5 +7,9 @@ validate_match = (self, other) ->
 $ ->
   $('[data-validate-confirmation]').each ->
     original_value = this
+
+    $(@).change (event) ->
+      validate_match(original_value, event.target)
+
     $("##{@.id}_confirmation").change (event) ->
       validate_match(event.target, original_value)
