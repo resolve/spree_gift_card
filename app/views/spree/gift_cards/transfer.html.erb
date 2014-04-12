@@ -1,18 +1,37 @@
 <h1 data-hook="gift-card-header">
   <%= Spree.t(:transfer_gift_card) %></h1>
 </h1>
-<%= form_for @gift_card, class: 'gift-card-form' do |f| %>
+<%= form_for @gift_card, html: { class: 'gift-card-form' } do |f| %>
   <p class="email-wrapper">
     <p class="email-label-wrapper">
       <%= f.label :email %>
     </p>
-    <%= f.text_field :email %>
+    <%= f.text_field :email,
+      placeholder: "address@email.com",
+      value: nil,
+      required: true,
+      data: { validate_confirmation: true },
+      type: :email %>
+  </p>
+  <p class="email-wrapper">
+    <p class="email-label-wrapper">
+      <%= f.label :email_confirmation %>
+    </p>
+    <%= f.text_field :email,
+      placeholder: "address@email.com",
+      id: 'gift_card_email_confirmation',
+      value: nil,
+      required: true,
+      type: :email %>
   </p>
   <p class="note-wrapper">
     <p class="note-label-wrapper">
       <%= f.label :note %>
     </p>
-    <%= f.text_area :note %>
+    <%= f.text_area :note,
+      placeholder: Spree.t(:gift_card_note_placeholder),
+      value: nil,
+      required: true %>
   </p>
   <p class="submit-wrapper">
     <%= f.submit Spree.t(:gift_card_transfer_submit), confirm: Spree.t(:gift_card_confirm_transfer) %>

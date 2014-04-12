@@ -1,6 +1,7 @@
 en:
   gift_card_expiration_subject: "Youre gift card is expiring soon!"
   spree:
+    gift_card_note_placeholder: "Add a note or memo."
     successfully_transferred_gift_card: "successfully sent gift card to %{email}"
     gift_card_transfer_submit: "transfer gift card"
     gift_card_confirm_transfer:
