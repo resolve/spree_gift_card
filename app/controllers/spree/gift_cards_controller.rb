@@ -27,7 +27,8 @@ module Spree
         flash[:success] = Spree.t(:successfully_transferred_gift_card,
                                   email: transfer_params[:email])
 
-        Spree::GiftCardMailer.gift_card_issued(@gift_card).deliver
+        Spree::GiftCardMailer.gift_card_transferred(@gift_card,
+                                                    current_spree_user.email).deliver
 
         redirect_to gift_cards_path
       else

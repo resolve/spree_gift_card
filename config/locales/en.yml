@@ -18,6 +18,11 @@ en:
     create_new_gift_card: Create New Gift Card
     view_users_gift_cards: View Users Gift Cards
     gift_card_mailer:
+      gift_card_transferred:
+        transferred: "%{sender} sent you a gift card!"
+        current: Current Value
+        expiration: Expiration Date
+        code: Redemption Code
       gift_card_expiring:
         expiring_soon: "Your gift card is expiring soon!"
         current: Current Value
