@@ -54,6 +54,12 @@ module Spree
         end
       end
 
+      def show
+        if @object
+          @adjustments = Spree::Adjustment.scoped.gift_card.where(originator_id: @object.id)
+        end
+      end
+
       private
 
       def collection
