@@ -1,0 +1,6 @@
+<p><%= t('.transferred', sender: @sender) %></p>
+<p>
+  <%= t('.current') %>: <%= number_to_currency(@gift_card.current_value) %><br/>
+  <%= t('.expiration') %>: <%= @gift_card.expiration_date.to_date.to_s(:long) %><br/>
+  <%= t('.code') %>: <%= @gift_card.code %>
+</p>

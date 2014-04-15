@@ -1,7 +1,9 @@
 Spree::Core::Engine.routes.draw do
-  resources :gift_cards
-
-  get "/account/gift_cards", to: "users#gift_cards", as: :account_gift_cards
+  resources :gift_cards, except: [:edit] do
+    member do
+      get :transfer
+    end
+  end
 
   namespace :admin do
     resources :gift_cards do

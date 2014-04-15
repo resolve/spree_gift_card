@@ -1,6 +1,6 @@
 <div class="show-all-link">
-  <%= link_to_if @show_all, Spree.t(:hide_inactive), account_gift_cards_path do
-    link_to Spree.t(:show_all_gc), account_gift_cards_path(show_all: true)
+  <%= link_to_if @show_all, Spree.t(:hide_inactive), :gift_cards do
+    link_to Spree.t(:show_all_gc), gift_cards_path(show_all: true)
   end %>
 </div>
 <table class="gc-table">
@@ -20,6 +20,7 @@
       <th><%= Spree.t(:issue_date) %></th>
       <th><%= Spree.t(:status) %></th>
       <th><%= Spree.t(:note) %></th>
+      <th></th>
     </tr>
   </thead>
   <tbody class="gc-table-body">
