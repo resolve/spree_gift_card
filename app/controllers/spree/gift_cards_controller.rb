@@ -34,6 +34,7 @@ module Spree
           Spree::GiftCardMailer.gift_card_transferred(@gift_card,
                                                         current_spree_user.email).deliver
 
+          flash[:success] = Spree.t(:successfully_transferred_gift_card)
           redirect_to gift_cards_path
         else
           flash[:error] = Spree.t(:insufficient_balance)

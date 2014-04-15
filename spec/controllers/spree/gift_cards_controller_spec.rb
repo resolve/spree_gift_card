@@ -34,9 +34,9 @@ describe Spree::GiftCardsController do
 
     it { should redirect_to Spree::GiftCard }
 
-    pending "has a success message" do
+    it "has a success message" do
       subject
-      flash[:success].should =~ /successfully sent gift card/
+      expect(flash[:success]).to be_true
     end
 
     it "sends an email to the recipitent notifying them they've received a gift card" do
