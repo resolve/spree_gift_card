@@ -4,7 +4,7 @@ Spree::Core::Engine.routes.draw do
       get :send_to_friend
     end
     member do
-      post :transfer
+      patch :transfer
     end
   end
 

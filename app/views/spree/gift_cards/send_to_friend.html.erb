@@ -1,39 +1,71 @@
-<h1 data-hook="gift-card-header">
+
   <%= Spree.t(:transfer_gift_card) %></h1>
 </h1>
-<%= form_for @gift_card, html: { class: 'gift-card-form' } do |f| %>
+<%= form_for [:transfer, @gift_card], html: { class: 'gift-card-form' } do |f| %>
   <p class="email-wrapper">
     <p class="email-label-wrapper">
       <%= f.label :email %>
     </p>
     <%= f.text_field :email,
-      placeholder: "address@email.com",
+      placeholder: Spree.t(:email,
+                           scope: [:gift_card, :transfer, :placeholders]),
       value: nil,
       required: true,
       data: { validate_confirmation: true },
       type: :email %>
   </p>
+
   <p class="email-wrapper">
     <p class="email-label-wrapper">
       <%= f.label :email_confirmation %>
     </p>
     <%= f.text_field :email,
-      placeholder: "address@email.com",
+      placeholder: Spree.t(:email_confirmation,
+                           scope: [:gift_card, :transfer, :placeholders]),
       id: 'gift_card_email_confirmation',
       value: nil,
       required: true,
       type: :email %>
   </p>
+
+  <p class="name-wrapper">
+    <p class="name-label-wrapper">
+      <%= f.label :name %>
+    </p>
+    <%= f.text_field :name,
+      placeholder: Spree.t(:name,
+                           scope: [:gift_card, :transfer, :placeholders]),
+      required: true,
+      value: nil %>
+  </p>
+
   <p class="note-wrapper">
     <p class="note-label-wrapper">
       <%= f.label :note %>
     </p>
     <%= f.text_area :note,
-      placeholder: Spree.t(:gift_card_note_placeholder),
+      placeholder: Spree.t(:note,
+                           scope: [:gift_card, :transfer, :placeholders]),
       value: nil %>
   </p>
+
+  <p class="transfer-amount-wrapper">
+    <p class="transfer-amount-label-wrapper">
+      <%= f.label :transfer_amount %>
+    </p>
+    <%= f.text_field :transfer_amount,
+      placeholder: Spree.t(:transfer_amount,
+                           scope: [:gift_card, :transfer, :placeholders]),
+      step: '0.01',
+      min: 0.0,
+      max: @gift_card.current_value,
+      type: :number,
+      value: @gift_card.current_value %>
+  </p>
+
   <p class="submit-wrapper">
-    <%= f.submit Spree.t(:gift_card_transfer_submit), confirm: Spree.t(:gift_card_confirm_transfer) %>
+    <%= f.submit Spree.t(:gift_card_transfer_submit),
+      confirm: Spree.t(:gift_card_confirm_transfer) %>
   </p>
 <% end %>
 
