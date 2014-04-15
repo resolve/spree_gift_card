@@ -6,6 +6,6 @@
   <%= content_tag :td, Spree.t(gift_card.status), class: "state state-#{gift_card.status}" %>
   <td class="note"><%= gift_card.note %></td>
   <td class="transfer">
-    <%= link_to Spree.t(:transfer_gift_card), [:transfer, gift_card], class: :btn %>
+    <%= link_to Spree.t(:transfer_gift_card), [:send_to_friend, gift_card], class: :btn %>
   </td>
 <% end %>

@@ -4,15 +4,15 @@ describe Spree::GiftCardsController do
   let(:user) { create :user}
   login
 
-  describe "get transfer" do
-    subject { get :transfer, id: card.id, use_route: :spree }
+  describe "GET send_to_friend" do
+    subject { get :send_to_friend, id: card.id, use_route: :spree }
     let!(:card) { create :gift_card, user: user }
     it { should be_success }
-    it { should render_template :transfer }
+    it { should render_template :send_to_friend }
   end
 
-  describe "PUT update" do
-    subject { put :update,
+  describe "PUT transfer" do
+    subject { put :transfer,
               id: card.id,
               gift_card: { email: email, note: "sup heres a gc" },
               use_route: :spree }
@@ -54,7 +54,7 @@ describe Spree::GiftCardsController do
                to receive(:update_attributes).and_return(false) }
 
       it "it re-renders the action" do
-        should render_template :transfer
+        should render_template :send_to_friend
       end
     end
   end

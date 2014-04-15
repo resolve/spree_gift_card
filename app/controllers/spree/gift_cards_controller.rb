@@ -1,6 +1,6 @@
 module Spree
   class GiftCardsController < Spree::StoreController
-    before_filter :find_gift_card, only: [:update, :transfer]
+    before_filter :find_gift_card, only: [:send_to_friend, :transfer]
 
     def new
       find_gift_card_variants
@@ -19,10 +19,10 @@ module Spree
       end
     end
 
-    def transfer
+    def send_to_friend
     end
 
-    def update
+    def transfer
       if @gift_card.update_attributes transfer_params
         flash[:success] = Spree.t(:successfully_transferred_gift_card,
                                   email: transfer_params[:email])
@@ -32,7 +32,7 @@ module Spree
 
         redirect_to gift_cards_path
       else
-        render action: :transfer
+        render action: :send_to_friend
       end
     end
 
