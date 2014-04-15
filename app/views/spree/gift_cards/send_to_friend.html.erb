@@ -30,8 +30,7 @@
     </p>
     <%= f.text_area :note,
       placeholder: Spree.t(:gift_card_note_placeholder),
-      value: nil,
-      required: true %>
+      value: nil %>
   </p>
   <p class="submit-wrapper">
     <%= f.submit Spree.t(:gift_card_transfer_submit), confirm: Spree.t(:gift_card_confirm_transfer) %>
