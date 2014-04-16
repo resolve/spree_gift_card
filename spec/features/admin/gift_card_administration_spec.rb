@@ -27,7 +27,7 @@ feature "Admin Gift Card Administration", js: true do
     fill_in 'gift_card[name]', with: 'First Last'
     fill_in 'gift_card[note]', with: 'Test message.'
     fill_in 'gift_card[expiration_date]', with: 1.day.from_now
-    fill_in 'gift_card[original_value]', with: '$50.00'
+    fill_in 'gift_card[original_value]', with: '50.00'
     click_button 'Create'
     page.should have_content('You have successfully created the gift card.')
     within 'table.index' do

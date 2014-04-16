@@ -1,6 +1,8 @@
 en:
   gift_card_expiration_subject: "Youre gift card is expiring soon!"
   spree:
+    gift_card_name_placeholder: ''
+    gift_card_transfer_amount_placeholder: ''
     gift_card_note_placeholder: "Add a note or memo."
     successfully_transferred_gift_card: "successfully sent gift card to %{email}"
     gift_card_transfer_submit: "transfer gift card"
@@ -47,7 +49,14 @@ en:
     back_to_gift_cards_list: "Back to Gift Cards List"
     buy_gift_card: "Buy gift card"
     current_value: "Balance"
-    gift_card: 'Gift Card'
+    gift_card:
+      transfer:
+        placeholders:
+          email: 'Email'
+          email_confirmation: 'Email'
+          name: 'Name'
+          note: 'A short note to your friend.'
+          transfer_amount: 'Amount to send'
     gift_cards: "Gift cards"
     gift_card_calculator: 'Gift Card Calculator'
     gift_code: 'Gift Code'
