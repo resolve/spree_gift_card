@@ -1,6 +1,6 @@
 module Spree
   class GiftCardsController < Spree::StoreController
-    before_filter :find_gift_card, only: [:update, :transfer]
+    before_filter :find_gift_card, only: [:send_to_friend, :transfer]
 
     def new
       find_gift_card_variants
@@ -19,20 +19,27 @@ module Spree
       end
     end
 
-    def transfer
+    def send_to_friend
     end
 
-    def update
-      if @gift_card.update_attributes transfer_params
-        flash[:success] = Spree.t(:successfully_transferred_gift_card,
-                                  email: transfer_params[:email])
+    def transfer
+      Spree::GiftCard.transaction do
+        t_params = transfer_params
+        transfer_amount = t_params.delete(:transfer_amount).to_d
 
-        Spree::GiftCardMailer.gift_card_transferred(@gift_card,
-                                                    current_spree_user.email).deliver
+        @gift_card.current_value -= transfer_amount
+        new_gift_card = Spree::GiftCard.new t_params
 
-        redirect_to gift_cards_path
-      else
-        render action: :transfer
+        if @gift_card.save && new_gift_card.save
+          Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
+                                                        current_spree_user.email).deliver
+
+          flash[:success] = Spree.t(:successfully_transferred_gift_card)
+          redirect_to gift_cards_path
+        else
+          flash[:error] = Spree.t(:insufficient_balance)
+          render action: :send_to_friend
+        end
       end
     end
 
@@ -70,7 +77,10 @@ module Spree
     end
 
     def transfer_params
-      t_params = params.require(:gift_card).permit(:note, :email)
+      t_params = params.require(:gift_card).permit(:note, :email, :name, :transfer_amount)
+      t_params[:current_value] = t_params[:transfer_amount]
+      t_params[:original_value] = t_params[:transfer_amount]
+      t_params[:expiration_date] = @gift_card.expiration_date
       set_user_in_params t_params
       t_params
     end

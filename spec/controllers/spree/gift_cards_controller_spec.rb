@@ -4,31 +4,39 @@ describe Spree::GiftCardsController do
   let(:user) { create :user}
   login
 
-  describe "get transfer" do
-    subject { get :transfer, id: card.id, use_route: :spree }
+  describe "GET send_to_friend" do
+    subject { get :send_to_friend, id: card.id, use_route: :spree }
     let!(:card) { create :gift_card, user: user }
     it { should be_success }
-    it { should render_template :transfer }
+    it { should render_template :send_to_friend }
   end
 
-  describe "PUT update" do
-    subject { put :update,
-              id: card.id,
-              gift_card: { email: email, note: "sup heres a gc" },
+  describe "PUT transfer" do
+    subject { put :transfer,
+              id: 1,
+              gift_card: {
+                email: email,
+                name: 'joe',
+                note: 'sup heres a gc',
+                transfer_amount: transfer_amount
+              },
               use_route: :spree }
 
+
+    let!(:transfer_amount) { 4 }
+    let!(:gc_value) { 10 }
     let(:email) { "recipitent@email.com"}
-    let!(:card) { create :gift_card, user: user }
+    let!(:card) { create :gift_card,
+                  id: 1,
+                  user: user,
+                  original_value: gc_value,
+                  current_value: gc_value }
 
     it { should be_redirect }
 
     it "has a success message" do
       subject
-      flash[:success].should =~ /successfully sent gift card/
-    end
-
-    it "removes the gift card from the sender's account" do
-      expect{ subject }.to change{ user.gift_cards.count }.by( -1 )
+      expect(flash[:success]).to be_true
     end
 
     it "sends an email to the recipitent notifying them they've received a gift card" do
@@ -41,20 +49,52 @@ describe Spree::GiftCardsController do
       subject
     end
 
+    it "sets the new cards expiration date to be the same as the original" do
+      subject
+      expect(Spree::GiftCard.last.expiration_date).to eq card.reload.expiration_date
+    end
+
+    it "deducts the transferred amount from the original gift card" do
+      subject
+      expect(card.reload.current_value).to eq 6.0
+    end
+
+    it "create a new gift card that is owned by the recipitent" do
+      expect{subject}.to change{Spree::GiftCard.count}
+      new_card = Spree::GiftCard.last
+      expect(new_card.email).to eq email
+      expect(new_card.name).to eq 'joe'
+      expect(new_card.current_value).to eq 4.0
+    end
+
+    context "with invalid parameters" do
+      context "when the gift card being sent's balance is less than the transferred amount" do
+        let(:gc_value) { 1.0 }
+        before { subject }
+
+        it "it re-renders the action" do
+          should render_template :send_to_friend
+        end
+
+        it "sets the error flash" do
+          expect(flash[:error]).to be_true
+        end
+
+        it "doesn't change the original gift card" do
+          expect(card.reload.current_value).to eq 1.0
+        end
+
+        it "doesn't create another gift card" do
+          expect{subject}.to_not change{Spree::GiftCard.count}
+        end
+      end
+    end
+
     context "when the recipitent does have a matching user" do
       let!(:recipitent) { create :user, email: email }
 
       it "adds the gift card to the recipitent's account" do
         expect{subject}.to change{recipitent.gift_cards.count}.by( 1 )
-      end
-    end
-
-    context "with invalid parameters" do
-      before { allow_any_instance_of(Spree::GiftCard).
-               to receive(:update_attributes).and_return(false) }
-
-      it "it re-renders the action" do
-        should render_template :transfer
       end
     end
   end

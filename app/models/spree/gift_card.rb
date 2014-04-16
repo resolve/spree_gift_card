@@ -12,10 +12,10 @@ module Spree
     has_many :transactions, class_name: 'Spree::GiftCardTransaction'
 
     validates :code,               presence: true, uniqueness: true
-    validates :current_value,      presence: true
+    validates :current_value,      presence: true, numericality: { greater_than_or_equal_to: 0 }
     validates :email, email: true, presence: true
     validates :name,               presence: true
-    validates :original_value,     presence: true
+    validates :original_value,     presence: true, numericality: { greater_than_or_equal_to: 0 }
     validates :expiration_date,    presence: true
 
     before_validation :generate_code, on: :create

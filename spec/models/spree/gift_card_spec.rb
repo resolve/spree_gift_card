@@ -5,8 +5,10 @@ describe Spree::GiftCard do
   it {should have_many(:transactions)}
 
   it {should validate_presence_of(:current_value)}
+  it {should validate_numericality_of(:current_value).is_greater_than_or_equal_to(0)}
   it {should validate_presence_of(:email)}
   it {should validate_presence_of(:original_value)}
+  it {should validate_numericality_of(:original_value).is_greater_than_or_equal_to(0)}
   it {should validate_presence_of(:name)}
 
   context "when expiration_date isn't set" do
