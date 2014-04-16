@@ -13,5 +13,11 @@ Spree::Core::Engine.routes.draw do
         put :restore
       end
     end
+
+    resources :adjustments do
+      member do
+        post :refund_gc
+      end
+    end
   end
 end
