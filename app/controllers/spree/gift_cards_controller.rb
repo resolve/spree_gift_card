@@ -31,7 +31,7 @@ module Spree
         new_gift_card = Spree::GiftCard.new t_params
 
         if @gift_card.save && new_gift_card.save
-          Spree::GiftCardMailer.gift_card_transferred(@gift_card,
+          Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
                                                         current_spree_user.email).deliver
 
           flash[:success] = Spree.t(:successfully_transferred_gift_card)
