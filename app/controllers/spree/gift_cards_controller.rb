@@ -80,6 +80,7 @@ module Spree
       t_params = params.require(:gift_card).permit(:note, :email, :name, :transfer_amount)
       t_params[:current_value] = t_params[:transfer_amount]
       t_params[:original_value] = t_params[:transfer_amount]
+      t_params[:expiration_date] = @gift_card.expiration_date
       set_user_in_params t_params
       t_params
     end

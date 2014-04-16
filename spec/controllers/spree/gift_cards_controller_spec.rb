@@ -49,6 +49,11 @@ describe Spree::GiftCardsController do
       subject
     end
 
+    it "sets the new cards expiration date to be the same as the original" do
+      subject
+      expect(Spree::GiftCard.last.expiration_date).to eq card.reload.expiration_date
+    end
+
     it "deducts the transferred amount from the original gift card" do
       subject
       expect(card.reload.current_value).to eq 6.0
