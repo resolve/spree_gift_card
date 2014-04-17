@@ -88,7 +88,7 @@ module Spree
 
     def order_activatable?(order)
       order &&
-      created_at < order.created_at &&
+      !expired? &&
       current_value > 0 &&
       !UNACTIVATABLE_ORDER_STATES.include?(order.state) &&
       is_valid_user?(order.user)
