@@ -94,7 +94,11 @@ module Spree
     end
 
     def gift_card_params
-      params.require(:gift_card).permit(:email, :name, :note, :variant_id)
+      gc_params = params.require(:gift_card).permit(:email, :name, :note, :variant_id)
+      unless gc_params[:user_id]
+        set_user_in_params gc_params
+      end
+      gc_params
     end
 
     def gc_sort_order

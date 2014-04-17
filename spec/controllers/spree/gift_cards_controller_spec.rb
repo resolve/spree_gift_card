@@ -99,6 +99,23 @@ describe Spree::GiftCardsController do
     end
   end
 
+  describe "POST create" do
+    context "when a user matches the email" do
+
+      subject { post :create,
+                gift_card: attributes_for(:gift_card, email: user.email, variant_id: variant.id ),
+                use_route: :spree }
+
+      let(:variant) { create :variant }
+      let(:gift_card) { Spree::GiftCard.last }
+
+      it "gives the user ownership of the gift card" do
+        subject
+        expect(gift_card.user).to eq user
+      end
+    end
+  end
+
   describe "GET index" do
     subject { get :index, use_route: :spree }
 
