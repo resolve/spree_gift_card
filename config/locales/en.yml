@@ -1,6 +1,7 @@
 en:
   spree:
     refund_gc: Refund Giftcard
+    gift_card_returned_subject: You have been refunded a gift card
     gift_card_return_confirmation: Are you sure? This will grant the user a gift card in the amount they spent on this order.
     gift_card_return_name: "GC Return"
     gift_card_return_note: "You have been refunded for a gift card you used on Order# %{order_number}"
