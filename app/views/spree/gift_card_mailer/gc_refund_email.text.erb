@@ -1,0 +1,5 @@
+Hello <%= @order.user.email %>,
+
+This email is to inform you we have credited an gift card to your account as a refund for a gift card used on order #<%= @order.number %> for the amount of $<%= @gift_card.current_value.to_s %>
+
+You will be able to select this gift card from within the payment process.

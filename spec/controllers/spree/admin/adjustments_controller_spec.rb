@@ -34,6 +34,11 @@ describe Spree::Admin::AdjustmentsController do
       expect(order.reload.adjustments.last.amount).to eql(adjustment.amount * -1)
     end
 
+    it "sends an email" do
+      expect(Spree::GiftCardMailer).to receive(:gc_refund_email).and_return(double(deliver: true))
+      subject
+    end
+
     describe "the created gift card" do
       it "has the opposite value of the adjustment" do
         subject

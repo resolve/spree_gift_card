@@ -26,4 +26,13 @@ describe Spree::GiftCardMailer do
     end
   end
 
+  describe ".gc_refund_email" do
+    let(:gift_card) { build_stubbed(:gift_card) }
+    let(:order) { build_stubbed(:order) }
+
+    subject { described_class.gc_refund_email gift_card, order }
+
+    its(:to) { should eql([gift_card.email]) }
+    its(:encoded) { should match("This email is to inform you we have credited") }
+  end
 end
