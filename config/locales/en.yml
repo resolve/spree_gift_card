@@ -1,5 +1,4 @@
 en:
-  gift_card_expiration_subject: "Youre gift card is expiring soon!"
   spree:
     refund_gc: Refund Giftcard
     gift_card_return_confirmation: Are you sure? This will grant the user a gift card in the amount they spent on this order.
@@ -13,7 +12,7 @@ en:
     gift_card_confirm_transfer:
       Are you sure you'd like to transfer this gift certificate? This action
       cannot be undone.
-    gift_card_issued_subject: "You've been issued a gift card"
+
     transfer_gift_card: "Transfer Gift Certificate"
     view_my_gift_certificates: "View my gift certificates"
     show_all_gc: "Show redeemed and expired gift certificates"
@@ -25,17 +24,20 @@ en:
     view_users_gift_cards: View Users Gift Cards
     gift_card_mailer:
       gift_card_transferred:
-        transferred: "%{sender} sent you a gift card!"
+        transferred: &transferred "%{sender} sent you a gift card!"
+        subject: *transferred
         current: Current Value
         expiration: Expiration Date
         code: Redemption Code
       gift_card_expiring:
-        expiring_soon: "Your gift card is expiring soon!"
+        expiring_soon: &expiring_soon "Your gift card is expiring soon!"
+        subject: *expiring_soon
         current: Current Value
         expiration: Expiration Date
         code: Redemption Code
       gift_card_issued:
-        issued: "You've been issued a gift card!"
+        issued: &issued "You've been issued a gift card!"
+        subject: *issued
         current: Current Value
         expiration: Expiration Date
         code: Redemption Code
