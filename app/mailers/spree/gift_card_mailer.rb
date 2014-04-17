@@ -24,7 +24,7 @@ class Spree::GiftCardMailer < Spree::BaseMailer
   def gc_refund_email(gift_card, order)
     @gift_card = gift_card
     @order = order
-    subject = Spree.t(:gift_card_returned_subject)
+    subject = Spree.t(:subject, scope: [:gift_card_mailer, :gc_refund_email])
     mail(to: @gift_card.email, from: from_address, subject: subject)
   end
 end
