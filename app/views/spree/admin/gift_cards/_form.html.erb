@@ -22,7 +22,8 @@
   <div class="omega two columns">
     <%= f.field_container :restrict_user do %>
       <%= label_tag :restrict_user, Spree.t(:restrict_user) %><br/>
-      <%= check_box_tag :restrict_user, 1, true %>
+      <% binding.pry %>
+      <%= check_box_tag :restrict_user, 1, @object.new_record ? true : @object.user_id? %>
     <% end %>
   </div>
 
