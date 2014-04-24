@@ -2,28 +2,18 @@ Spree::CheckoutController.class_eval do
 
   Spree::PermittedAttributes.checkout_attributes << :gift_code
 
-  durably_decorate :update, mode: 'soft', sha: '131d36c23333d439e6dea57fb311d878dd3838f3' do
-    if @order.update_attributes(object_params)
-      if @order.gift_code.present?
-        render :edit and return unless apply_gift_code
-      end
+  append_before_filter :add_gift_code, only: :update
 
-      unless @order.next
-        flash[:error] = @order.errors.full_messages.join("\n")
-        redirect_to checkout_state_path(@order.state) and return
-      end
+  private
 
-      if @order.completed?
-        session[:order_id] = nil
-        flash.notice = Spree.t(:order_processed_successfully)
-        flash[:commerce_tracking] = "nothing special"
-        redirect_to completion_route
-      else
-        redirect_to checkout_state_path(@order.state)
+  def add_gift_code
+    if object_params[:gift_code]
+      @order.gift_code = object_params[:gift_code]
+      unless apply_gift_code
+        flash[:error] = Spree.t(:gc_apply_failure)
+        render :edit
+        return
       end
-    else
-      render :edit
     end
   end
-
 end
