@@ -4,7 +4,7 @@ class Spree::GiftCardMailer < Spree::BaseMailer
     @sender = sender
     mail(to: gift_card.email,
          from: from_address,
-         subject: Spree.t(:subject, scope: [:gift_card_mailer, :gift_card_transferred]))
+         subject: Spree.t(:subject, sender: sender, scope: [:gift_card_mailer, :gift_card_transferred]))
   end
 
   def gift_card_issued gift_card
