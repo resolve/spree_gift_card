@@ -67,6 +67,22 @@ describe Spree::GiftCardsController do
       expect(new_card.current_value).to eq 4.0
     end
 
+    describe "GiftCardTransfer" do
+      it "is created" do
+        expect{subject}.to change{Spree::GiftCardTransfer.count}.by(1)
+      end
+
+      it "has an amount" do
+        subject
+        expect(assigns(:gift_card).gift_card_transfers.last.amount).to eql(4)
+      end
+
+      it "has a destination gift card" do
+        subject
+        expect(assigns(:gift_card).transferred_gift_cards).to have(1).items
+      end
+    end
+
     context "with invalid parameters" do
       context "when the gift card being sent's balance is less than the transferred amount" do
         let(:gc_value) { 1.0 }
