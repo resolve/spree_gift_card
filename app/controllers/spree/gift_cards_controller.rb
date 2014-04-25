@@ -31,6 +31,7 @@ module Spree
         new_gift_card = Spree::GiftCard.new t_params
 
         if @gift_card.save && new_gift_card.save
+          @gift_card.gift_card_transfers.create!(destination: new_gift_card)
           Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
                                                         current_spree_user.email).deliver
 

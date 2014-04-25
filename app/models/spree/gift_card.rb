@@ -9,6 +9,10 @@ module Spree
     belongs_to :variant
     belongs_to :line_item
 
+    has_many :gift_card_transfers, class_name: "Spree::GiftCardTransfer", foreign_key: "source_id"
+    has_many :transferred_gift_cards, through: :gift_card_transfers, source: :destination
+    has_one :origin, class_name: "Spree::GiftCardTransfer", foreign_key: "destination_id"
+
     has_many :transactions, class_name: 'Spree::GiftCardTransaction'
 
     validates :code,               presence: true, uniqueness: true
