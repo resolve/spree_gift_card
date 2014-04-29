@@ -20,6 +20,10 @@ Spree::Order.class_eval do
     adjustments.gift_card.reload.detect{ |credit| credit.originator_id == gift_card.id }.present?
   end
 
+  def valid_gift_cards
+    available_gift_cards - applied_gift_cards - gift_cards_in_cart
+  end
+
   def applied_gift_cards
     adjustments.gift_card.map(&:originator)
   end

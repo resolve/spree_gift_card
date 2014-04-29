@@ -53,4 +53,29 @@ describe Spree::Order do
       end
     end
   end
+
+  describe '#valid_gift_cards' do
+    context "with three gift cards, one applied, one in the cart and one not applied" do
+      let!(:order) { create :order_with_line_items }
+      let!(:applied_gc) { create :gift_card, user: order.user }
+      let!(:unapplied_gc) { create :gift_card, user: order.user }
+      let!(:li_gc) { create :gift_card, user: order.user }
+      let!(:li) { create :line_item, order: order }
+
+      subject { order.valid_gift_cards }
+
+      before do
+        li.product.update(is_gift_card: true)
+        li_gc.update(line_item: li)
+
+        applied_gc.apply(order)
+
+        order.reload
+      end
+
+      it "only returns an array of unapplied gift cards" do
+        expect(subject.to_a).to eql([unapplied_gc])
+      end
+    end
+  end
 end
