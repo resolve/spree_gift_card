@@ -32,6 +32,11 @@ module Spree
 
     scope :active, ->(){ where('current_value != 0.0 AND expiration_date > ?', Time.now) }
 
+    scope :unexpired, ->{ where( "expiration_date >= ?", DateTime.current) }
+    scope :with_value, -> do
+      unexpired.where("current_value > 0")
+    end
+
     include Spree::Core::CalculatedAdjustments
 
     def self.default_expiration_date

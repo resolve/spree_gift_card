@@ -19,4 +19,5 @@ Spree::Order.class_eval do
     adjustments.gift_card.reload.detect{ |credit| credit.originator_id == gift_card.id }.present?
   end
 
+  delegate :available_gift_cards, to: :user
 end
