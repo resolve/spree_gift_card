@@ -1,6 +1,7 @@
 Spree::Order.class_eval do
-
   attr_accessor :gift_code
+
+  has_many :gift_cards_in_cart, through: :line_items, source: :gift_card
 
   # Finalizes an in progress order after checkout is complete.
   # Called after transition to complete state when payments will have been processed.
