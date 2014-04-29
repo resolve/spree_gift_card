@@ -34,4 +34,23 @@ describe Spree::Order do
 
   end
 
+  describe "#applied_gift_cards" do
+    context "with two adjustments, one a gift card and one normal" do
+      let(:order) { create :order }
+      let(:gc) { create :gift_card }
+
+      before do
+        gc.apply(order)
+        order.adjustments.create!(label: "test", amount: -5)
+
+        order.reload
+      end
+
+      subject { order.applied_gift_cards }
+
+      it "returns the gift cards for adjustments that have them" do
+        expect(subject.to_a).to eql([gc])
+      end
+    end
+  end
 end
