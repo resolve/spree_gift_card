@@ -19,7 +19,6 @@ require 'rspec/rails'
 
 require 'database_cleaner'
 require 'factory_girl'
-FactoryGirl.find_definitions
 require 'ffaker'
 require 'shoulda-matchers'
 
@@ -32,6 +31,9 @@ require 'spree/testing_support/factories'
 require 'spree/testing_support/authorization_helpers'
 require 'spree/testing_support/capybara_ext'
 require 'spree/testing_support/url_helpers'
+
+# Get our own factories
+require 'spree_gift_card/testing_support/factories'
 
 require 'pry'
 
