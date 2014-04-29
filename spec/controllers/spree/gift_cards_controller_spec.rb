@@ -67,19 +67,19 @@ describe Spree::GiftCardsController do
       expect(new_card.current_value).to eq 4.0
     end
 
-    describe "GiftCardTransfer" do
+    describe "the gift card transfer" do
       it "is created" do
         expect{subject}.to change{Spree::GiftCardTransfer.count}.by(1)
-      end
-
-      it "has an amount" do
-        subject
-        expect(assigns(:gift_card).gift_card_transfers.last.amount).to eql(4)
       end
 
       it "has a destination gift card" do
         subject
         expect(assigns(:gift_card).transferred_gift_cards).to have(1).items
+      end
+
+      it "has a source gift card" do
+        subject
+        expect(assigns(:gift_card).gift_card_transfers.first.source).to eql(assigns(:gift_card))
       end
     end
 
