@@ -48,6 +48,40 @@ describe Spree::GiftCard do
     card.valid?.should be_false
   end
 
+  describe ".active" do
+    let!(:card) { create :gift_card, expiration_date: expiration_date }
+
+    subject { described_class.all.active }
+
+    before do
+      allow(DateTime).to receive(:current).and_return("2014-04-29T20:53:56+00:00".to_datetime)
+    end
+
+    context "with an inactive card" do
+      let(:expiration_date) { "2014-04-28 23:59:59 UTC".to_datetime }
+
+      it "isn't active" do
+        expect(subject).to_not include(card)
+      end
+    end
+
+    context "with an active card" do
+      let(:expiration_date) { "2014-04-29T23:59:59+00:00".to_datetime }
+
+      it "is active" do
+        expect(subject).to include(card)
+      end
+    end
+
+    context "with a card that should be active but isn't" do
+      let(:expiration_date) { "2014-04-29T20:48:56+00:00".to_datetime }
+
+      it "isn't active" do
+        expect(subject).to_not include(card)
+      end
+    end
+  end
+
   describe '.expired?' do
     let(:gift_card) { create(:gift_card) }
 
