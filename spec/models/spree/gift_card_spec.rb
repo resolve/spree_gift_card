@@ -48,6 +48,22 @@ describe Spree::GiftCard do
     card.valid?.should be_false
   end
 
+  describe "soft deleting the card" do
+    let!(:card) { create :gift_card }
+
+    before do
+      card.destroy
+    end
+
+    it "is not shown without the with deleted scope" do
+      expect(described_class.all).to be_empty
+    end
+
+    it "is shown with the with_deleted scope" do
+      expect(described_class.with_deleted).to include(card)
+    end
+  end
+
   describe ".active" do
     let!(:card) { create :gift_card, expiration_date: expiration_date }
 
