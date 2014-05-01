@@ -1,0 +1,59 @@
+<fieldset class="no-border-bottom">
+  <legend><%= Spree.t('adjustments') %></legend>
+  <table>
+    <thead>
+      <th><%= Spree.t('name')%></th>
+      <th><%= Spree.t('amount')%></th>
+    </thead>
+    <tbody id="order-charges" data-hook="order_details_adjustments"  class="with-border">
+      <% order.adjustments.non_gift_card.eligible.each do |adjustment| %>
+        <% next if ((adjustment.originator_type == 'Spree::TaxRate') and (adjustment.amount == 0)) || adjustment.originator_type == 'Spree::ShippingMethod' %>
+        <tr class="total">
+          <td><strong><%= adjustment.label %>:</strong></td>
+          <td class="total align-center"><span><%= adjustment.display_amount %></span></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</fieldset>
+
+<% if order.adjustments.eligible.gift_card.any? %>
+  <fieldset class="no-border-bottom">
+    <legend><%= Spree.t(:gift_card_adjustments) %></legend>
+    <table>
+      <thead>
+        <th><%= Spree.t(:code)%></th>
+        <th><%= Spree.t(:original_balance)%></th>
+        <th><%= Spree.t(:current_balance)%></th>
+        <th><%= Spree.t(:redeemed_this_order)%></th>
+      </thead>
+      <tbody id="gift-card-charges" data-hook="order_details_gc_adjustments"  class="with-border">
+        <% order.adjustments.eligible.gift_card.each do |adj| %>
+          <% card = Spree::GiftCard.with_deleted.find(adj.originator_id) %>
+          <% if card.deleted? %>
+          <tr class="deleted-gc">
+          <% else %>
+          <tr>
+          <% end %>
+            <td class="gc-code">
+              <strong>
+                <%= link_to spree.admin_gift_cards_path(q: {code_cont: card.code}) do %>
+                  <%= card.code %>:
+                <% end %>
+              </strong>
+            </td>
+            <td class="gc-original-balance">
+              <%= Money.new(card.original_value * 100, order.currency).format %>
+            </td>
+            <td class="gc-current-balance">
+              <%= Money.new(card.current_value * 100, order.currency).format %>
+            </td>
+            <td class="gc-total total align-center">
+              <span><%= adj.display_amount %></span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </fieldset>
+<% end %>
