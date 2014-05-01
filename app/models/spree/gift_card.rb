@@ -2,6 +2,7 @@ require 'spree/core/validators/email'
 
 module Spree
   class GiftCard < ActiveRecord::Base
+    acts_as_paranoid
 
     UNACTIVATABLE_ORDER_STATES = ["complete", "awaiting_return", "returned"]
 

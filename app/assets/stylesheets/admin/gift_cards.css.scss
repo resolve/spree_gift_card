@@ -26,3 +26,12 @@
     text-align: center;
   }
 }
+
+tr.deleted-gc {
+  color: red;
+  text-decoration: line-through;
+
+  a {
+    color: red;
+  }
+}
