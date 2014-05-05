@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Spree::GiftCard do
-
   it {should have_many(:transactions)}
 
   it {should validate_presence_of(:current_value)}
@@ -50,17 +49,37 @@ describe Spree::GiftCard do
 
   describe "soft deleting the card" do
     let!(:card) { create :gift_card }
-
+    let!(:calculator_id) { card.calculator.id }
     before do
       card.destroy
     end
 
-    it "is not shown without the with deleted scope" do
-      expect(described_class.all).to be_empty
+    context "deleting the card" do
+      it "is not shown without the with deleted scope" do
+        expect(described_class.all).to be_empty
+      end
+
+      it "is shown with the with_deleted scope" do
+        expect(described_class.with_deleted).to include(card)
+      end
+
+      it "retains its calculator on soft delete" do
+        expect(described_class.with_deleted.first.calculator.id).to eql(calculator_id)
+      end
     end
 
-    it "is shown with the with_deleted scope" do
-      expect(described_class.with_deleted).to include(card)
+    context "restoring the card", focus: true do
+      before do
+        card.restore
+      end
+
+      it "is restored" do
+        expect(card.deleted_at).to be_nil
+      end
+
+      it "keeps its original calculator when it's restored" do
+        expect(card.reload.calculator.id).to eql(calculator_id)
+      end
     end
   end
 
