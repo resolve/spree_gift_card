@@ -47,6 +47,17 @@ describe Spree::GiftCard do
     card.valid?.should be_false
   end
 
+  describe "#associate_user!" do
+    let!(:gc) { create :gift_card }
+    let!(:user) { create :user }
+    subject { gc.associate_user!(user) }
+
+    it "associates with the user passed in" do
+      subject
+      expect(gc.user).to eql(user)
+    end
+  end
+
   describe "soft deleting the card" do
     let!(:card) { create :gift_card }
     let!(:calculator_id) { card.calculator.id }
