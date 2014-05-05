@@ -141,18 +141,58 @@ describe Spree::GiftCardsController do
   end
 
   describe "POST create" do
-    context "when a user matches the email" do
+    let(:attributes) { attributes_for(:gift_card, email: user.email, variant_id: variant.id) }
+    subject { post :create,
+              gift_card: attributes,
+              use_route: :spree }
 
-      subject { post :create,
-                gift_card: attributes_for(:gift_card, email: user.email, variant_id: variant.id ),
-                use_route: :spree }
+    let(:variant) { create :variant }
+    let(:gift_card) { Spree::GiftCard.last }
 
-      let(:variant) { create :variant }
-      let(:gift_card) { Spree::GiftCard.last }
-
-      it "gives the user ownership of the gift card" do
+    context "with a successful request" do
+      before do
         subject
-        expect(gift_card.user).to eq user
+      end
+
+      describe "the response" do
+        it "redirects to the cart" do
+          expect(response).to redirect_to(spree.cart_path)
+        end
+      end
+
+      describe "the gift card" do
+        let(:gc) { assigns(:gift_card) }
+
+        it "creates a new gift card" do
+          expect(gc).to be_persisted
+        end
+
+        it "belongs to a line item" do
+          expect(gc.line_item).to be
+        end
+
+        it "doesnt have a user associated with it" do
+          expect(gc.user).to_not be
+        end
+      end
+    end
+
+    context "with an unsuccessful request" do
+      before do
+        attributes.delete(:name)
+        subject
+      end
+
+      describe "the response" do
+        it "renders the new action" do
+          expect(response).to render_template(:new)
+        end
+      end
+
+      describe "the gift card" do
+        it "doesnt create a gift card" do
+          expect(Spree::GiftCard.all.to_a).to be_empty
+        end
       end
     end
   end
