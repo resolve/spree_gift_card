@@ -14,13 +14,17 @@ describe Spree::GiftCardsController do
   describe "PUT transfer" do
     subject { put :transfer,
               id: 1,
-              gift_card: {
-                email: email,
-                name: 'joe',
-                note: 'sup heres a gc',
-                transfer_amount: transfer_amount
-              },
+              gift_card: gift_card_attributes,
               use_route: :spree }
+
+    let(:gift_card_attributes) do
+      {
+        email: email,
+        name: 'joe',
+        note: 'sup heres a gc',
+        transfer_amount: transfer_amount
+      }
+    end
 
 
     let!(:transfer_amount) { 4 }
@@ -93,7 +97,7 @@ describe Spree::GiftCardsController do
         end
 
         it "sets the error flash" do
-          expect(flash[:error]).to be_true
+          expect(flash[:error]).to eql(Spree.t(:insufficient_balance))
         end
 
         it "doesn't change the original gift card" do
@@ -101,6 +105,27 @@ describe Spree::GiftCardsController do
         end
 
         it "doesn't create another gift card" do
+          expect{subject}.to_not change{Spree::GiftCard.count}
+        end
+      end
+
+      context "when the parameters are incomplete or the new gift card is invalid" do
+        before do
+          gift_card_attributes.delete(:email)
+        end
+
+        describe "the response" do
+          before { subject }
+          it "renders send_to_friend" do
+            expect(response).to render_template(:send_to_friend)
+          end
+
+          it "sets the error flash" do
+            expect(flash[:error]).to include("Email can't be blank")
+          end
+        end
+
+        it "doesn't create a gift card" do
           expect{subject}.to_not change{Spree::GiftCard.count}
         end
       end

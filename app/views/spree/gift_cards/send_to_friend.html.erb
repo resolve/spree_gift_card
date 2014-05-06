@@ -8,21 +8,6 @@
       placeholder: Spree.t(:email,
                            scope: [:gift_card, :transfer, :placeholders]),
       value: nil,
-      required: true,
-      data: { validate_confirmation: true },
-      type: :email %>
-  </div>
-
-  <div class="email-wrapper">
-    <p class="email-label-wrapper">
-      <%= f.label :email_confirmation %>
-    </p>
-    <%= f.text_field :email,
-      placeholder: Spree.t(:email_confirmation,
-                           scope: [:gift_card, :transfer, :placeholders]),
-      id: 'gift_card_email_confirmation',
-      value: nil,
-      required: true,
       type: :email %>
   </div>
 
@@ -33,7 +18,6 @@
     <%= f.text_field :name,
       placeholder: Spree.t(:name,
                            scope: [:gift_card, :transfer, :placeholders]),
-      required: true,
       value: nil %>
   </div>
 
@@ -62,8 +46,13 @@
   </div>
 
   <div class="submit-wrapper">
-    <%= f.submit Spree.t(:gift_card_transfer_submit),
-      confirm: Spree.t(:gift_card_confirm_transfer), class: :btn %>
+    <%= f.submit Spree.t(:gift_card_transfer_submit), id: 'send-to-a-friend-submit', class: :btn %>
   </div>
 <% end %>
+
+<script>
+  Spree.translations = <%== {
+    gc_confirmation: Spree.t(:js_confirmation)
+  }.to_json %>
+</script>
 

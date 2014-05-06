@@ -23,23 +23,28 @@ module Spree
     end
 
     def transfer
+      t_params = transfer_params
+      transfer_amount = t_params.delete(:transfer_amount).to_d
+
+      @gift_card.current_value -= transfer_amount
+      new_gift_card = Spree::GiftCard.new t_params
+
       Spree::GiftCard.transaction do
-        t_params = transfer_params
-        transfer_amount = t_params.delete(:transfer_amount).to_d
-
-        @gift_card.current_value -= transfer_amount
-        new_gift_card = Spree::GiftCard.new t_params
-
         if @gift_card.save && new_gift_card.save
           @gift_card.gift_card_transfers.create!(destination: new_gift_card)
           Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
-                                                        current_spree_user.email).deliver
+                                                      current_spree_user.email).deliver
 
           flash[:success] = Spree.t(:successfully_transferred_gift_card,
                                     email: new_gift_card.email)
           redirect_to gift_cards_path
         else
-          flash[:error] = Spree.t(:insufficient_balance)
+          flash.now[:error] = if @gift_card.errors.any?
+                                Spree.t(:insufficient_balance)
+                              else
+                                new_gift_card.errors.full_messages.join(", ")
+                              end
+
           render action: :send_to_friend
         end
       end
