@@ -4,6 +4,8 @@ module Spree
   class GiftCard < ActiveRecord::Base
     acts_as_paranoid
 
+    include Spree::Core::CalculatedAdjustments
+
     UNACTIVATABLE_ORDER_STATES = ["complete", "awaiting_return", "returned"]
 
     belongs_to :user, class_name: Spree.user_class.to_s
@@ -11,10 +13,10 @@ module Spree
     belongs_to :line_item
 
     has_many :gift_card_transfers, class_name: "Spree::GiftCardTransfer", foreign_key: "source_id"
+    has_many :transactions, class_name: 'Spree::GiftCardTransaction'
     has_many :transferred_gift_cards, through: :gift_card_transfers, source: :destination
     has_one :origin, class_name: "Spree::GiftCardTransfer", foreign_key: "destination_id"
-
-    has_many :transactions, class_name: 'Spree::GiftCardTransaction'
+    has_one :calculator, class_name: "Spree::Calculator::GiftCard", as: :calculable
 
     validates :code,               presence: true, uniqueness: true
     validates :current_value,      presence: true, numericality: { greater_than_or_equal_to: 0 }
@@ -24,7 +26,7 @@ module Spree
     validates :expiration_date,    presence: true
 
     before_validation :generate_code, on: :create
-    before_validation :set_calculator, on: :create
+    before_validation :initialize_calculator, on: :create
     before_validation :set_values, on: :create
     before_validation :set_expiration_date
 
@@ -33,7 +35,6 @@ module Spree
 
     scope :active, ->(){ where('current_value != 0.0 AND expiration_date > ?', DateTime.current) }
 
-    include Spree::Core::CalculatedAdjustments
 
     def self.default_expiration_date
       Spree::Config.gc_default_expiration_days.days.from_now
@@ -131,7 +132,7 @@ module Spree
       end
     end
 
-    def set_calculator
+    def initialize_calculator
       self.calculator = Spree::Calculator::GiftCard.new
     end
 
