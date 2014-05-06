@@ -62,8 +62,13 @@
   </div>
 
   <div class="submit-wrapper">
-    <%= f.submit Spree.t(:gift_card_transfer_submit),
-      confirm: Spree.t(:gift_card_confirm_transfer), class: :btn %>
+    <%= f.submit Spree.t(:gift_card_transfer_submit), id: 'send-to-a-friend-submit', class: :btn %>
   </div>
 <% end %>
+
+<script>
+  Spree.translations = <%== {
+    gc_confirmation: Spree.t(:js_confirmation)
+  }.to_json %>
+</script>
 
