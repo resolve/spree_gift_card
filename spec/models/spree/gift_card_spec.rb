@@ -174,8 +174,9 @@ describe Spree::GiftCard do
     end
   end
 
-  context '#apply' do
+  describe '#apply' do
     let(:gift_card) { create(:gift_card, variant: create(:variant, price: 25)) }
+    subject { gift_card.apply(order) }
 
     it 'creates adjustment with mandatory set to true' do
       order = create(:order_with_totals)
@@ -193,8 +194,8 @@ describe Spree::GiftCard do
         allow(gift_card).to receive(:expired?).and_return(true)
       end
 
-      it "returns false" do
-        gift_card.apply(order).should be_false
+      it "raises an expired gift card exception" do
+        expect{subject}.to raise_error(Spree::GiftCard::ExpiredGiftCardException)
       end
     end
 
@@ -218,6 +219,57 @@ describe Spree::GiftCard do
         order.update!
         gift_card.apply(order)
         order.adjustments.find_by_originator_id_and_originator_type(gift_card.id, gift_card.class.to_s).amount.to_f.should eql(-25.0)
+      end
+    end
+
+    context "when the order has a user" do
+      let!(:order) { create :order }
+
+      context "when the gift card has a user" do
+        let!(:gift_card) { create :gift_card, user: user }
+
+        context "when the gift cards user equals the orders user" do
+          let(:user) { order.user }
+
+          it { should be_true }
+        end
+
+        context "when the gift cards user does not equal the orders user" do
+          let(:user) { create :user }
+
+          it "raises an invalid user exception" do
+            expect{subject}.to raise_error(Spree::GiftCard::InvalidUserException)
+          end
+        end
+      end
+
+      context "when the gift card does not have a user" do
+        let!(:gift_card) { create :gift_card, user: nil }
+
+        it { should be_true }
+
+        it "associates the gift card with the orders user" do
+          subject
+          expect(gift_card.user).to eql(order.user)
+        end
+      end
+    end
+
+    context "when the order doesn't have a user" do
+      let!(:order) { create :order, user: nil, email: "1234@hello.ca" }
+
+      context "when the gift card has a user" do
+        let!(:gift_card) { create :gift_card, user: create(:user) }
+
+        it "raises an invalid user exception" do
+          expect{subject}.to raise_error(Spree::GiftCard::InvalidUserException)
+        end
+      end
+
+      context "when the gift card has no user" do
+        let!(:gift_card) { create :gift_card, user: nil }
+
+        it { should be_true }
       end
     end
 

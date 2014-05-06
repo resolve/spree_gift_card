@@ -2,6 +2,9 @@ require 'spree/core/validators/email'
 
 module Spree
   class GiftCard < ActiveRecord::Base
+    class ExpiredGiftCardException < StandardError; end;
+    class InvalidUserException < StandardError; end;
+
     acts_as_paranoid
 
     UNACTIVATABLE_ORDER_STATES = ["complete", "awaiting_return", "returned"]
@@ -53,14 +56,13 @@ module Spree
     def apply(order)
       # Nothing to do if the gift card is already associated with the order
       return if order.gift_credit_exists?(self)
-      if is_valid_user?(order.user) && !expired?
-        order.update!
-        create_adjustment(Spree::GiftCard.model_name.human.titlecase, order, order, true)
-        order.update!
-        true
-      else
-        false
-      end
+      raise ExpiredGiftCardException.new if expired?
+      raise InvalidUserException.new if !is_valid_user?(order.user)
+
+      associate_user!(order.user)
+
+      create_adjustment(Spree::GiftCard.model_name.human.titlecase, order, order, true)
+      order.update!
     end
 
     def expired?
@@ -118,11 +120,12 @@ module Spree
     end
 
     def is_valid_user?(user)
-      if gc_user = self.user_id
-        return user.id == gc_user
-      end
+      !self.user || (self.user == user)
+    end
 
-      true
+    def associate_user!(user)
+      self.user = user
+      self.save!
     end
 
     def generate_code
@@ -141,6 +144,5 @@ module Spree
         self.original_value = self.variant.try(:price)
       end
     end
-
   end
 end
