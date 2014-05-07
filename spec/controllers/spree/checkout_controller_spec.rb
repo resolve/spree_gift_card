@@ -14,55 +14,77 @@ describe Spree::CheckoutController do
 
   describe "PUT update" do
     subject { put :update, valid_params }
+    before do
+      session[:order_id] = order.id
+    end
 
-    describe "adding multiple gift cards" do
+    context "adding a single gift code" do
+      let(:gc) { create :gift_card }
+      let(:first_adjustment) { order.adjustments.gift_card.first }
+
       before do
-        session[:order_id] = order.id
+        valid_params.merge!(gift_code: gc.code)
       end
 
-      context "with a single gift code" do
-        let(:gc) { create :gift_card }
-        let(:first_adjustment) { order.adjustments.gift_card.first }
-
-        before do
-          valid_params.merge!(gift_code: gc.code)
+      context "when the gift code is not already applied" do
+        it "applies the gift code" do
+          subject
+          order.reload
+          expect(first_adjustment.originator).to eql(gc)
         end
 
-        context "when the gift code is not already applied" do
-          it "applies the gift code" do
+        describe "the response" do
+          it "is successful" do
             subject
-            order.reload
-            expect(first_adjustment.originator).to eql(gc)
-          end
-
-          describe "the response" do
-            it "is successful" do
-              subject
-              expect(response).to be_success
-            end
+            expect(response).to be_success
           end
         end
+      end
 
-        context "when the gift card is applied" do
-          before do
-            gc.apply(order)
+      context "when the gift card is applied" do
+        before do
+          gc.apply(order)
+        end
+
+        it "doesn't reapply the gift card" do
+          expect(order.adjustments.gift_card).to have(1).items
+        end
+
+        describe "the response" do
+          it "renders the edit template" do
+            subject
+            expect(response).to render_template(:edit)
           end
 
-          it "doesn't reapply the gift card" do
-            expect(order.adjustments.gift_card).to have(1).items
+          it "sets the error flash" do
+            subject
+            expect(flash[:error]).to eql(Spree.t(:gc_apply_failure))
           end
+        end
+      end
+    end
 
-          describe "the response" do
-            it "renders the edit template" do
-              subject
-              expect(response).to render_template(:edit)
-            end
+    context "adding multiple gift codes" do
+      let(:gcs) { create_list :gift_card, 3 }
 
-            it "sets the error flash" do
-              subject
-              expect(flash[:error]).to eql(Spree.t(:gc_apply_failure))
-            end
-          end
+      before do
+        valid_params.merge!(gift_code: gcs.map(&:code))
+      end
+
+      it "creates the relevant adjustments" do
+        subject
+        expect(order.adjustments.gift_card.map(&:originator_id)).to eql(gcs.map(&:id))
+      end
+
+      describe "the response" do
+        it "doesnt set the error flash" do
+          subject
+          expect(flash[:error]).to_not be
+        end
+
+        it "responds correctly" do
+          subject
+          expect(response).to be_success
         end
       end
     end
