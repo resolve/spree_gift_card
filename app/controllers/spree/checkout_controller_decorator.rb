@@ -1,4 +1,5 @@
 Spree::CheckoutController.class_eval do
+  include Spree::GiftCodes
   append_before_filter :add_gift_codes, only: :update
 
   private

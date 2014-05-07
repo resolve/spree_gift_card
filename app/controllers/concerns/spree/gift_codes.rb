@@ -1,6 +1,5 @@
-Spree::StoreController.class_eval do
+module Spree::GiftCodes
   protected
-
   def apply_gift_codes
     success_state = true
 
