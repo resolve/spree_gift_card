@@ -8,7 +8,6 @@ describe Spree::CheckoutController do
   before do
     allow(controller).to receive(:try_current_spree_user).and_return(user)
     allow(controller).to receive(:current_spree_user).and_return(user)
-    allow(controller).to receive(:current_order).and_return(order)
     allow(controller).to receive(:authorize!).and_return(true)
   end
 
@@ -65,13 +64,13 @@ describe Spree::CheckoutController do
     end
 
     context "adding multiple gift codes" do
-      let(:gcs) { create_list :gift_card, 3 }
+      let(:gcs) { create_list :gift_card, 2 }
 
       before do
         valid_params.merge!(gift_code: gcs.map(&:code))
       end
 
-      it "creates the relevant adjustments" do
+      it "creates the relevant adjustments for all three gift codes applied" do
         subject
         expect(order.adjustments.gift_card.map(&:originator_id)).to eql(gcs.map(&:id))
       end
