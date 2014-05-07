@@ -22,7 +22,7 @@ describe "Checkout", js: true do
     end
 
     it "can enter a valid gift code" do
-      fill_in "order[gift_code]", :with => "foobar"
+      fill_in "gift_code", :with => "foobar"
       click_button "Update"
       page.should have_content("Gift code has been successfully applied to your order.")
       within '#cart_adjustments' do
