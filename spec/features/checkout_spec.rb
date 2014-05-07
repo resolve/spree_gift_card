@@ -25,7 +25,6 @@ describe "Checkout", js: true do
     it "can enter a valid gift code" do
       fill_in "gift_code", :with => "foobar"
       click_button "Update"
-      page.should have_content("Gift code has been successfully applied to your order.")
       within '#cart_adjustments' do
         page.should have_content("Gift Card")
         page.should have_content("-$19.99")
@@ -35,10 +34,8 @@ describe "Checkout", js: true do
     it 'can enter multiple gift codes' do
       fill_in "gift_code", :with => "foobar"
       click_button "Update"
-      page.should have_content("Gift code has been successfully applied to your order.")
       fill_in "gift_code", :with => "barfoo"
       click_button "Update"
-      page.should have_content("Gift code has been successfully applied to your order.")
 
       within '#cart_adjustments' do
         page.should have_content("-$19.99")

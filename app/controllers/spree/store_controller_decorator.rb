@@ -18,10 +18,7 @@ Spree::StoreController.class_eval do
         success_state = false
       end
     end
-
-    success_state ?
-      flash[:notice] = Spree.t(:gift_code_applied) :
-      flash[:error] = Spree.t(:gift_code_not_found)
+    @order.errors.add(:base, Spree.t(:gift_code_not_found)) unless success_state
 
     success_state
   end

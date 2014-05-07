@@ -5,9 +5,7 @@ Spree::CheckoutController.class_eval do
 
   def add_gift_codes
     unless apply_gift_codes
-      flash[:error] = Spree.t(:gc_apply_failure)
-      render :edit
-      return
+      render :edit and return
     end
   end
 end
