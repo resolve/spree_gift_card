@@ -5,8 +5,6 @@ Spree::CheckoutController.class_eval do
   private
 
   def add_gift_codes
-    unless apply_gift_codes
-      render :edit and return
-    end
+    render :edit and return unless apply_gift_codes(@order)
   end
 end

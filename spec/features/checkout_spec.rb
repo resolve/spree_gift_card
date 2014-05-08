@@ -76,7 +76,7 @@ describe "Checkout", js: true do
 
       fill_in "Gift code", :with => "coupon_codes_rule_man"
       click_button "Save and Continue"
-      page.should have_content("The gift code you entered doesn't exist. Please try again.")
+      page.should have_content("The gift code: coupon_codes_rule_man could not be applied to your order.")
     end
 
     it "displays valid gift code's adjustment" do

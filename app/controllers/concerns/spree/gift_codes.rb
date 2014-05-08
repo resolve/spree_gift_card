@@ -1,24 +1,17 @@
 module Spree::GiftCodes
   protected
-  def apply_gift_codes
-    success_state = true
 
+  def apply_gift_codes order
     Array.wrap(params[:gift_code]).reject(&:blank?).each do |code|
       card = Spree::GiftCard.find_by(code: code)
 
-      unless card
-        success_state = false
-        next
-      end
-
-      if card.order_activatable?(@order) && card.apply(@order)
+      if card && card.order_activatable?(order) && card.apply(order)
         fire_event('spree.checkout.gift_code_added', :gift_code => card.code)
       else
-        success_state = false
+        order.errors.add(:base, Spree.t(:gift_code_not_applied, code: code))
       end
     end
-    @order.errors.add(:base, Spree.t(:gift_code_not_found)) unless success_state
 
-    success_state
+    order.errors[:base].empty?
   end
 end

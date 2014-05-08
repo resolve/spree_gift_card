@@ -57,7 +57,7 @@ describe Spree::CheckoutController do
 
           it "sets the error flash" do
             subject
-            expect(assigns(:order).errors.full_messages).to include(Spree.t(:gc_apply_failure))
+            expect(assigns(:order).errors.full_messages).to include(Spree.t(:gift_code_not_applied, code: gc.code))
           end
         end
       end
@@ -78,7 +78,8 @@ describe Spree::CheckoutController do
       describe "the response" do
         it "doesnt add errors to the order" do
           subject
-          expect(assigns(:order).errors.full_messages).to_not include(Spree.t(:gc_apply_failure)) end
+          expect(assigns(:order).errors[:base]).to be_empty
+        end
 
         it "responds correctly" do
           subject
