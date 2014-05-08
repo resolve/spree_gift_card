@@ -112,6 +112,11 @@ module Spree
       end
     end
 
+    def associate_user!(user)
+      self.user = user
+      self.save!
+    end
+
     private
 
     def set_expiration_date
@@ -122,11 +127,6 @@ module Spree
 
     def is_valid_user?(user)
       !self.user || (self.user == user)
-    end
-
-    def associate_user!(user)
-      self.user = user
-      self.save!
     end
 
     def generate_code
