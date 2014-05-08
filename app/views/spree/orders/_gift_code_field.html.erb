@@ -1,8 +1,9 @@
-<tbody>
+<tbody class="gift-code-field">
   <tr>
     <td colspan='6'>
-      <%= order_form.label :gift_code, Spree.t(:gift_code) + ':' %>
-      <%= order_form.text_field :gift_code, :size => 10, :value => nil %>
+      <%= label_tag :gift_code, Spree.t(:gift_code) + ':' %>
+      <%= text_field_tag :gift_code, nil, :size => 10 %>
+      <%= order_form.submit Spree.t(:apply) %>
     </td>
   </tr>
 </tbody>

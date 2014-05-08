@@ -1,19 +1,10 @@
 Spree::CheckoutController.class_eval do
-
-  Spree::PermittedAttributes.checkout_attributes << :gift_code
-
-  append_before_filter :add_gift_code, only: :update
+  include Spree::GiftCodes
+  append_before_filter :add_gift_codes, only: :update
 
   private
 
-  def add_gift_code
-    if object_params[:gift_code]
-      @order.gift_code = object_params[:gift_code]
-      unless apply_gift_code
-        flash[:error] = Spree.t(:gc_apply_failure)
-        render :edit
-        return
-      end
-    end
+  def add_gift_codes
+    render :edit and return unless apply_gift_codes(@order)
   end
 end

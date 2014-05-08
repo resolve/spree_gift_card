@@ -1,7 +1,7 @@
 en:
   spree:
+    gift_code_not_applied: "The gift code: %{code} could not be applied to your order."
     js_confirmation: "You are about to send ${{amount}} to {{sending_to}}. This cannot be undone, are you sure you want to continue?"
-    gc_apply_failure: "The gift code you entered doesn't exist. Please try again."
     refund_gc: Refund Giftcard
     gift_card_return_confirmation: Are you sure? This will grant the user a gift card in the amount they spent on this order.
     gift_card_return_name: "GC Return"

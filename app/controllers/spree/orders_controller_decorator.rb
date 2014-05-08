@@ -1,10 +1,15 @@
 Spree::OrdersController.class_eval do
+  include Spree::GiftCodes
 
-  Spree::PermittedAttributes.checkout_attributes << :gift_code
+  before_filter :add_gift_codes, only: :update
 
-  durably_decorate :after_update_attributes, mode: 'soft', sha: 'bdc8fc02ee53912eda684bdd37a6266594665866' do
-    apply_gift_code
-    original_after_update_attributes
+  protected
+
+  def add_gift_codes
+    unless apply_gift_codes(current_order)
+      # We set the order because the edit template expects it to be set.
+      @order = current_order
+      render :edit and return
+    end
   end
-
 end
