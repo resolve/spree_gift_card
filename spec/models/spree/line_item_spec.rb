@@ -22,7 +22,7 @@ describe Spree::LineItem do
 
     it "sends the gift card email" do
       expect(Spree::OrderMailer).to receive(:gift_card_email).
-        with(gc.id, line_item.order.id).
+        with(gc, line_item.order).
         and_return(deliver_double)
       subject
     end
