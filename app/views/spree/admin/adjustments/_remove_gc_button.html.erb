@@ -1,0 +1,10 @@
+<% if defined?(adjustment) && adjustment.source_type == "Spree::GiftCard" %>
+  <%=
+    link_to_with_icon 'icon-reply-all',
+      Spree.t(:refund_gc),
+      refund_gc_admin_adjustment_path(order_id: @order.to_param, id: adjustment.to_param),
+      method: :post,
+      no_text: true,
+      data: { confirm: Spree.t(:gift_card_return_confirmation) }
+  %>
+<% end %>

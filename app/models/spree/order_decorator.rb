@@ -1,6 +1,5 @@
 Spree::Order.class_eval do
-
-  attr_accessor :gift_code
+  has_many :gift_cards_in_cart, through: :line_items, source: :gift_card
 
   # Finalizes an in progress order after checkout is complete.
   # Called after transition to complete state when payments will have been processed.
@@ -19,4 +18,13 @@ Spree::Order.class_eval do
     adjustments.gift_card.reload.detect{ |credit| credit.source_id == gift_card.id }.present?
   end
 
+  def valid_gift_cards
+    available_gift_cards - applied_gift_cards - gift_cards_in_cart
+  end
+
+  def applied_gift_cards
+    adjustments.gift_card.map(&:source)
+  end
+
+  delegate :available_gift_cards, to: :user
 end

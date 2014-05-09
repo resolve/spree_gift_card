@@ -1,13 +1,15 @@
 # Setup simplecov first to make sure coverage happens through everything.
 require 'simplecov'
-SimpleCov.start do
-  add_filter '/config/'
-  add_group 'Controllers', 'app/controllers'
-  add_group 'Helpers', 'app/helpers'
-  add_group 'Mailers', 'app/mailers'
-  add_group 'Models', 'app/models'
-  add_group 'Libraries', 'lib'
-  add_group 'Specs', 'spec'
+if ENV['COVERAGE']
+  SimpleCov.start do
+    add_filter '/config/'
+    add_group 'Controllers', 'app/controllers'
+    add_group 'Helpers', 'app/helpers'
+    add_group 'Mailers', 'app/mailers'
+    add_group 'Models', 'app/models'
+    add_group 'Libraries', 'lib'
+    add_group 'Specs', 'spec'
+  end
 end
 
 # Configure Rails Environment
@@ -17,7 +19,6 @@ require 'rspec/rails'
 
 require 'database_cleaner'
 require 'factory_girl'
-FactoryGirl.find_definitions
 require 'ffaker'
 require 'shoulda-matchers'
 
@@ -31,11 +32,17 @@ require 'spree/testing_support/authorization_helpers'
 require 'spree/testing_support/capybara_ext'
 require 'spree/testing_support/url_helpers'
 
+# Get our own factories
+require 'spree_gift_card/testing_support/factories'
+
+require 'pry'
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Spree::TestingSupport::UrlHelpers
   config.extend Spree::TestingSupport::AuthorizationHelpers::Request, :type => :feature # once spree updates this can be removed
   config.color = true
+  config.extend ControllerMacros, type: :controller
 
   # Set to false for running JS drivers.
   config.use_transactional_fixtures = false

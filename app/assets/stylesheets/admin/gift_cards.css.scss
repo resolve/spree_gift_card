@@ -1,0 +1,37 @@
+.sort-fields {
+  .inline {
+    display: inline-block;
+    padding-top: 0;
+  }
+
+  .field-block {
+    > label {
+      display: block;
+    }
+
+    padding: 10px 0;
+  }
+}
+
+.gift-card-buttons {
+  form {
+    display: inline-block;
+    margin-right: 10px;
+  }
+}
+
+#gc-table {
+  margin-top: 20px;
+  tbody {
+    text-align: center;
+  }
+}
+
+tr.deleted-gc {
+  color: red;
+  text-decoration: line-through;
+
+  a {
+    color: red;
+  }
+}

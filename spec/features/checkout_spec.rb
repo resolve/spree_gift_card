@@ -12,6 +12,7 @@ describe "Checkout", js: true do
 
   before do
     create(:gift_card, code: "foobar", variant: create(:variant, price: 25))
+    create(:gift_card, code: "barfoo", variant: create(:variant, price: 25))
   end
 
   context "on the cart page" do
@@ -22,20 +23,24 @@ describe "Checkout", js: true do
     end
 
     it "can enter a valid gift code" do
-      fill_in "order[gift_code]", :with => "foobar"
+      fill_in "gift_code", :with => "foobar"
       click_button "Update"
-      page.should have_content("Gift code has been successfully applied to your order.")
       within '#cart_adjustments' do
         page.should have_content("Gift Card")
         page.should have_content("-$19.99")
       end
     end
 
-    it "cannot enter a gift code that was created after the order" do
-      Spree::GiftCard.first.update_attribute(:created_at, 1.day.from_now)
-      fill_in "order[gift_code]", :with => "foobar"
+    it 'can enter multiple gift codes' do
+      fill_in "gift_code", :with => "foobar"
       click_button "Update"
-      page.should have_content("The gift code you entered doesn't exist. Please try again.")
+      fill_in "gift_code", :with => "barfoo"
+      click_button "Update"
+
+      within '#cart_adjustments' do
+        page.should have_content("-$19.99")
+        page.should have_content("$0.00")
+      end
     end
   end
 
@@ -71,7 +76,7 @@ describe "Checkout", js: true do
 
       fill_in "Gift code", :with => "coupon_codes_rule_man"
       click_button "Save and Continue"
-      page.should have_content("The gift code you entered doesn't exist. Please try again.")
+      page.should have_content("The gift code: coupon_codes_rule_man could not be applied to your order.")
     end
 
     it "displays valid gift code's adjustment" do

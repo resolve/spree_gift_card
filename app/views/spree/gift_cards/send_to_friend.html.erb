@@ -1,0 +1,58 @@
+<h1> <%= Spree.t(:transfer_gift_card) %> </h1>
+<%= form_for [:transfer, @gift_card], html: { class: 'gift-card-form' } do |f| %>
+  <div class="email-wrapper">
+    <p class="email-label-wrapper">
+      <%= f.label :email %>
+    </p>
+    <%= f.text_field :email,
+      placeholder: Spree.t(:email,
+                           scope: [:gift_card, :transfer, :placeholders]),
+      value: nil,
+      type: :email %>
+  </div>
+
+  <div class="name-wrapper">
+    <p class="name-label-wrapper">
+      <%= f.label :name %>
+    </p>
+    <%= f.text_field :name,
+      placeholder: Spree.t(:name,
+                           scope: [:gift_card, :transfer, :placeholders]),
+      value: nil %>
+  </div>
+
+  <div class="note-wrapper">
+    <p class="note-label-wrapper">
+      <%= f.label :note %>
+    </p>
+    <%= f.text_area :note,
+      placeholder: Spree.t(:note,
+                           scope: [:gift_card, :transfer, :placeholders]),
+      value: nil %>
+  </div>
+
+  <div class="transfer-amount-wrapper">
+    <p class="transfer-amount-label-wrapper">
+      <%= f.label :transfer_amount %>
+    </p>
+    <%= f.text_field :transfer_amount,
+      placeholder: Spree.t(:transfer_amount,
+                           scope: [:gift_card, :transfer, :placeholders]),
+      step: '0.01',
+      min: 0.0,
+      max: @gift_card.current_value,
+      type: :number,
+      value: @gift_card.current_value %>
+  </div>
+
+  <div class="submit-wrapper">
+    <%= f.submit Spree.t(:gift_card_transfer_submit), id: 'send-to-a-friend-submit', class: :btn %>
+  </div>
+<% end %>
+
+<script>
+  Spree.translations = <%== {
+    gc_confirmation: Spree.t(:js_confirmation)
+  }.to_json %>
+</script>
+
