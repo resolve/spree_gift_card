@@ -11,8 +11,8 @@ describe "Checkout", js: true do
   let!(:zone) { create(:zone) }
 
   before do
-    create(:gift_card, code: "foobar", variant: create(:variant, price: 25))
-    create(:gift_card, code: "barfoo", variant: create(:variant, price: 25))
+    create(:gift_card, code: "foobar", current_value: 10)
+    create(:gift_card, code: "barfoo", current_value: 5)
   end
 
   context "on the cart page" do
@@ -26,8 +26,8 @@ describe "Checkout", js: true do
       fill_in "gift_code", :with => "foobar"
       click_button "Update"
       within '#cart_adjustments' do
-        page.should have_content("Gift Card")
-        page.should have_content("-$19.99")
+        page.should have_content("Gift Code")
+        page.should have_content("-$10.00")
       end
     end
 
@@ -38,8 +38,7 @@ describe "Checkout", js: true do
       click_button "Update"
 
       within '#cart_adjustments' do
-        page.should have_content("-$19.99")
-        page.should have_content("$0.00")
+        page.should have_content("-$15.00")
       end
     end
   end
@@ -111,8 +110,8 @@ describe "Checkout", js: true do
       click_button "Save and Continue"
 
       within '#order-charges' do
-        page.should have_content("Gift Card")
-        page.should have_content("-$19.99")
+        page.should have_content("Gift Code")
+        page.should have_content("-$10.00")
       end
     end
 
