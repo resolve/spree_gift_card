@@ -6,12 +6,10 @@
       <th><%= Spree.t('amount')%></th>
     </thead>
     <tbody id="order-charges" data-hook="order_details_adjustments"  class="with-border">
-      <% order.adjustments.non_gift_card.eligible.each do |adjustment| %>
-        <% next if ((adjustment.source_type == 'Spree::TaxRate') and (adjustment.amount == 0)) || adjustment.source_type == 'Spree::ShippingMethod' %>
+      <% order.adjustments.non_gift_card.eligible.group_by(&:label).each do |label, adjustments| %>
         <tr class="total">
-          <td><strong><%= adjustment.label %>:</strong></td>
-          <td class="total align-center"><span><%= adjustment.display_amount %></span></td>
-        </tr>
+          <td><strong><%= label %>:</strong></td>
+          <td class="total align-center"><span><%= Spree::Money.new(adjustments.sum(&:amount)) %></span></td>
       <% end %>
     </tbody>
   </table>
