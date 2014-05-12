@@ -132,7 +132,7 @@ module Spree
 
     def generate_code
       until self.code.present? && self.class.where(code: self.code).count == 0
-        self.class.code_generator.generate(self)
+        self.code = self.class.code_generator.generate(self)
       end
     end
 
