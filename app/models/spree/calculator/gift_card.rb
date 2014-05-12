@@ -9,7 +9,7 @@ module Spree
       end
 
       def compute(order, gift_card)
-        order_adjustments = order.adjustments.where("amount < 0")
+        order_adjustments = order.adjustments
         order_adjustments.delete_if {|adj| adj.source == gift_card }
         credits = order_adjustments.map(&:amount).sum
         order_total = order.item_total + order.ship_total + order.line_items.map(&:additional_tax_total).sum + credits
