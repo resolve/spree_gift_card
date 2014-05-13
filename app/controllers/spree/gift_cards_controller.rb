@@ -4,7 +4,7 @@ module Spree
     before_filter :find_gift_card, only: [:send_to_friend, :transfer]
 
     def new
-      find_gift_card_variants
+      @gift_card_variants = gift_card_variants
       @gift_card = GiftCard.new
     end
 
@@ -74,7 +74,7 @@ module Spree
         end
         redirect_to cart_path
       rescue ActiveRecord::RecordInvalid
-        find_gift_card_variants
+        @gift_card_variants = gift_card_variants
         render :action => :new
       end
     end
@@ -85,9 +85,10 @@ module Spree
       redirect_to spree.login_path, notice: Spree.t(:login_required) unless current_spree_user
     end
 
-    def find_gift_card_variants
-      gift_card_product_ids = Product.not_deleted.where(is_gift_card: true).pluck(:id)
-      @gift_card_variants = Variant.joins(:prices).where(["amount > 0 AND product_id IN (?)", gift_card_product_ids]).order("amount")
+    def gift_card_variants
+      Spree::Variant.joins(:product).
+        where(spree_products: { is_gift_card: true}).
+        joins(:prices).where("spree_prices.amount > 0")
     end
 
     def transfer_params
