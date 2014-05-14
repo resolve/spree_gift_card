@@ -13,6 +13,7 @@ describe "Checkout", js: true do
   before do
     create(:gift_card, code: "foobar", variant: create(:variant, price: 25))
     create(:gift_card, code: "barfoo", variant: create(:variant, price: 25))
+    create(:gift_card, code: "biggc", variant: create(:variant, price: 150))
   end
 
   context "on the cart page" do
@@ -107,12 +108,13 @@ describe "Checkout", js: true do
       # To payment screen
       click_button "Save and Continue"
 
-      fill_in "Gift code", :with => "foobar"
+      # We use the biggc here because shipping is $100
+      fill_in "Gift code", :with => "biggc"
       click_button "Save and Continue"
 
       within '#order-charges' do
         page.should have_content("Gift Card")
-        page.should have_content("-$19.99")
+        page.should have_content("-$119.99")
       end
     end
 
