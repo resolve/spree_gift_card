@@ -1,5 +1,6 @@
 module Spree
   class GiftCardsController < Spree::StoreController
+    before_filter :ensure_user, only: [:index, :send_to_friend, :transfer]
     before_filter :find_gift_card, only: [:send_to_friend, :transfer]
 
     def new
@@ -79,6 +80,11 @@ module Spree
     end
 
     private
+
+    def ensure_user
+      redirect_to spree.login_path, notice: Spree.t(:login_required) unless current_spree_user
+    end
+
     def find_gift_card_variants
       gift_card_product_ids = Product.not_deleted.where(is_gift_card: true).pluck(:id)
       @gift_card_variants = Variant.joins(:prices).where(["amount > 0 AND product_id IN (?)", gift_card_product_ids]).order("amount")
