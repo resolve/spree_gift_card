@@ -209,6 +209,19 @@ describe Spree::GiftCardsController do
     it { should render_template(:index) }
     it { should be_success }
 
+    describe "when the user is not logged in" do
+      let!(:user) { nil }
+
+      it "redirects to the login path" do
+        expect(subject).to redirect_to(spree.login_path)
+      end
+
+      it "sets the flash" do
+        subject
+        expect(flash[:notice]).to be
+      end
+    end
+
     describe "sorting" do
       subject { get :index, use_route: :spree, show_all: "true" }
 
