@@ -1,7 +1,9 @@
 <div class="show-all-link">
-  <%= link_to_if @show_all, Spree.t(:hide_inactive), :gift_cards do
-    link_to Spree.t(:show_all_gc), gift_cards_path(show_all: true)
-  end %>
+  <% if params[:show_all] %>
+    <%= link_to Spree.t(:hide_inactive), gift_cards_path %>
+  <% else %>
+    <%= link_to Spree.t(:show_all), gift_cards_path(show_all: true) %>
+  <% end %>
 </div>
 <table class="gc-table">
   <colgroup>
