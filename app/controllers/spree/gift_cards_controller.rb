@@ -22,31 +22,35 @@ module Spree
     end
 
     def transfer
-      t_params = transfer_params
-      transfer_amount = t_params.delete(:transfer_amount).to_d
+      transfer_params = params.require(:gift_card).permit(:note, :email, :transfer_amount, :name)
+      additional_params = {
+        expiration_date: @gift_card.expiration_date,
+        user_id: Spree::User.find_by_email(transfer_params[:email]).try(:id)
+      }
 
-      @gift_card.current_value -= transfer_amount
-      new_gift_card = Spree::GiftCard.new t_params
+      new_gift_card = Spree::GiftCard.new transfer_params.merge(additional_params)
+      @gift_card.current_value -= new_gift_card.transfer_amount.to_d
 
-      Spree::GiftCard.transaction do
-        if @gift_card.save && new_gift_card.save
-          @gift_card.gift_card_transfers.create!(destination: new_gift_card)
-          Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
-                                                      current_spree_user.email).deliver
+      unless @gift_card.valid? && new_gift_card.valid?
+        flash.now[:error] = if @gift_card.errors.any?
+                              Spree.t(:insufficient_balance)
+                            else
+                              new_gift_card.errors.full_messages.join(", ")
+                            end
 
-          flash[:success] = Spree.t(:successfully_transferred_gift_card,
-                                    email: new_gift_card.email)
-          redirect_to gift_cards_path
-        else
-          flash.now[:error] = if @gift_card.errors.any?
-                                Spree.t(:insufficient_balance)
-                              else
-                                new_gift_card.errors.full_messages.join(", ")
-                              end
-
-          render action: :send_to_friend
-        end
+        render :send_to_friend
+        return
       end
+
+      @gift_card.save!
+      new_gift_card.save!
+      @gift_card.gift_card_transfers.create!(destination: new_gift_card)
+      Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
+                                                  current_spree_user.email).deliver
+
+      flash[:success] = Spree.t(:successfully_transferred_gift_card,
+                                email: new_gift_card.email)
+      redirect_to gift_cards_path
     end
 
     def create
@@ -87,22 +91,6 @@ module Spree
       Spree::Variant.joins(:product).
         where(spree_products: { is_gift_card: true}).
         joins(:prices).where("spree_prices.amount > 0")
-    end
-
-    def transfer_params
-      t_params = params.require(:gift_card).permit(:note, :email, :name, :transfer_amount)
-      t_params[:current_value] = t_params[:transfer_amount]
-      t_params[:original_value] = t_params[:transfer_amount]
-      t_params[:expiration_date] = @gift_card.expiration_date
-      set_user_in_params t_params
-      t_params
-    end
-
-    def set_user_in_params params_hash
-      if email = params_hash[:email]
-        user = Spree::User.where(email: email).first
-        params_hash[:user_id] = user ? user.id : nil
-      end
     end
 
     def gift_card_params

@@ -28,6 +28,7 @@ module Spree
     validates :original_value,     presence: true, numericality: { greater_than_or_equal_to: 0 }
     validates :expiration_date,    presence: true
 
+    before_validation :populate_values_from_transfer, if: :transfer_amount
     before_validation :generate_code, on: :create
     before_validation :initialize_calculator, on: :create
     before_validation :set_values, on: :create
@@ -36,6 +37,8 @@ module Spree
     scope :expires_in, ->(days) { where("expiration_date >= ? and expiration_date <= ?",
       days.days.from_now.beginning_of_day, days.days.from_now.end_of_day) }
     scope :active, ->(){ where('current_value != 0.0 AND expiration_date > ?', DateTime.current) }
+
+    attr_accessor :transfer_amount
 
     cattr_accessor :code_generator
     self.code_generator = Spree::GiftCard::Code
@@ -153,6 +156,11 @@ module Spree
         self.current_value  = self.variant.try(:price)
         self.original_value = self.variant.try(:price)
       end
+    end
+
+    def populate_values_from_transfer
+      self.current_value = transfer_amount
+      self.original_value = transfer_amount
     end
   end
 end
