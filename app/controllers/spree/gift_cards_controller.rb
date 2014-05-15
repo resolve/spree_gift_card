@@ -56,28 +56,20 @@ module Spree
     def create
       begin
         # Wrap the transaction script in a transaction so it is an atomic operation
+        @gift_card = GiftCard.new(gift_card_params)
         Spree::GiftCard.transaction do
-          @gift_card = GiftCard.new(gift_card_params)
           @gift_card.save!
-          # Create line item
-          line_item = LineItem.new(quantity: 1)
-          line_item.gift_card = @gift_card
-          line_item.variant = @gift_card.variant
-          line_item.price = @gift_card.variant.price
-          # Add to order
           order = current_order(create_order_if_necessary: true)
-          order.line_items << line_item
-          line_item.order=order
+          line_item = LineItem.create!(order: order, quantity: 1, gift_card: @gift_card, variant: @gift_card.variant, price: @gift_card.variant.price)
           order.update_totals
           order.save!
-          # Save gift card
-          @gift_card.line_item = line_item
-          @gift_card.save!
+          @gift_card.update!(line_item: line_item)
         end
+
         redirect_to cart_path
       rescue ActiveRecord::RecordInvalid
         @gift_card_variants = gift_card_variants
-        render :action => :new
+        render :new
       end
     end
 
