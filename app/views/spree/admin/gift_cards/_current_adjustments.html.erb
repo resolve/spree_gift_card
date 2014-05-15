@@ -1,0 +1,26 @@
+<% if adjustments.any? %>
+  <table id="gc-table">
+    <thead>
+      <tr>
+        <th class="order">Order</th>
+        <th class="order-state">Order State</th>
+        <th class="amount">Amount Redeemed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% adjustments.each do |adj| %>
+        <tr class="<%= cycle('even', 'odd') %>">
+          <td>
+            <%= link_to adj.adjustable.number, [:edit_admin, adj.adjustable] %>
+          </td>
+          <td><%= adj.adjustable.state %></td>
+          <td><%= adj.display_amount %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>
+    This gift card has not been used on any orders yet.
+  </p>
+<% end %>

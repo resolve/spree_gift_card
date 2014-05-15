@@ -2,6 +2,7 @@ module Spree
   module Admin
     class GiftCardsController < Spree::Admin::ResourceController
       before_filter :find_gift_card_variants, :except => [:restore, :void, :destroy]
+      before_filter :set_adjustments, only: [:show, :edit]
 
       def update
         @object.attributes = gift_card_params
@@ -54,13 +55,13 @@ module Spree
         end
       end
 
-      def show
+      private
+
+      def set_adjustments
         if @object
-          @adjustments = Spree::Adjustment.scoped.gift_card.where(source_id: @object.id)
+          @adjustments = Spree::Adjustment.gift_card.where(source_id: @object.id)
         end
       end
-
-      private
 
       def collection
         consolidate_search_parameters
