@@ -32,14 +32,10 @@ module Spree
       @gift_card.current_value -= new_gift_card.transfer_amount.to_d
 
       unless @gift_card.valid? && new_gift_card.valid?
-        flash.now[:error] = if @gift_card.errors.any?
-                              Spree.t(:insufficient_balance)
-                            else
-                              new_gift_card.errors.full_messages.join(", ")
-                            end
-
-        render :send_to_friend
-        return
+        flash.now[:error] = (@gift_card.errors.full_messages + new_gift_card.errors.full_messages).join(", ")
+        # Reload the gift card so it has the correct current_value
+        @gift_card.reload
+        render :send_to_friend and return
       end
 
       @gift_card.save!
