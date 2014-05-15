@@ -9,10 +9,8 @@ module Spree
     end
 
     def index
-      @show_all = params[:show_all] == "true"
-      @gift_cards = current_spree_user.gift_cards.page(params[:page]).
-        order(:expiration_date).reverse_order
-      @gift_cards = @gift_cards.active unless @show_all
+      @gift_cards = current_spree_user.gift_cards.order("expiration_date DESC")
+      @gift_cards = @gift_cards.active unless params[:show_all]
 
       @gift_cards.sort! do |a, b|
         comp = gc_sort_order[a.status] <=> gc_sort_order[b.status]
