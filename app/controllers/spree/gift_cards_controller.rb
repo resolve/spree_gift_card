@@ -4,15 +4,13 @@ module Spree
     before_filter :find_gift_card, only: [:send_to_friend, :transfer]
 
     def new
-      find_gift_card_variants
+      @gift_card_variants = gift_card_variants
       @gift_card = GiftCard.new
     end
 
     def index
-      @show_all = params[:show_all] == "true"
-      @gift_cards = current_spree_user.gift_cards.page(params[:page]).
-        order(:expiration_date).reverse_order
-      @gift_cards = @gift_cards.active unless @show_all
+      @gift_cards = current_spree_user.gift_cards.order("expiration_date DESC")
+      @gift_cards = @gift_cards.active unless params[:show_all]
 
       @gift_cards.sort! do |a, b|
         comp = gc_sort_order[a.status] <=> gc_sort_order[b.status]
@@ -24,58 +22,50 @@ module Spree
     end
 
     def transfer
-      t_params = transfer_params
-      transfer_amount = t_params.delete(:transfer_amount).to_d
+      transfer_params = params.require(:gift_card).permit(:note, :email, :transfer_amount, :name)
+      additional_params = {
+        expiration_date: @gift_card.expiration_date,
+        user_id: Spree::User.find_by_email(transfer_params[:email]).try(:id)
+      }
 
-      @gift_card.current_value -= transfer_amount
-      new_gift_card = Spree::GiftCard.new t_params
+      new_gift_card = Spree::GiftCard.new transfer_params.merge(additional_params)
+      @gift_card.current_value -= new_gift_card.transfer_amount.to_d
 
-      Spree::GiftCard.transaction do
-        if @gift_card.save && new_gift_card.save
-          @gift_card.gift_card_transfers.create!(destination: new_gift_card)
-          Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
-                                                      current_spree_user.email).deliver
-
-          flash[:success] = Spree.t(:successfully_transferred_gift_card,
-                                    email: new_gift_card.email)
-          redirect_to gift_cards_path
-        else
-          flash.now[:error] = if @gift_card.errors.any?
-                                Spree.t(:insufficient_balance)
-                              else
-                                new_gift_card.errors.full_messages.join(", ")
-                              end
-
-          render action: :send_to_friend
-        end
+      unless @gift_card.valid? && new_gift_card.valid?
+        flash.now[:error] = (@gift_card.errors.full_messages + new_gift_card.errors.full_messages).join(", ")
+        # Reload the gift card so it has the correct current_value
+        @gift_card.reload
+        render :send_to_friend and return
       end
+
+      @gift_card.save!
+      new_gift_card.save!
+      @gift_card.gift_card_transfers.create!(destination: new_gift_card)
+      Spree::GiftCardMailer.gift_card_transferred(new_gift_card,
+                                                  current_spree_user.email).deliver
+
+      flash[:success] = Spree.t(:successfully_transferred_gift_card,
+                                email: new_gift_card.email)
+      redirect_to gift_cards_path
     end
 
     def create
       begin
         # Wrap the transaction script in a transaction so it is an atomic operation
+        @gift_card = GiftCard.new(gift_card_params)
         Spree::GiftCard.transaction do
-          @gift_card = GiftCard.new(gift_card_params)
           @gift_card.save!
-          # Create line item
-          line_item = LineItem.new(quantity: 1)
-          line_item.gift_card = @gift_card
-          line_item.variant = @gift_card.variant
-          line_item.price = @gift_card.variant.price
-          # Add to order
           order = current_order(create_order_if_necessary: true)
-          order.line_items << line_item
-          line_item.order=order
+          line_item = LineItem.create!(order: order, quantity: 1, gift_card: @gift_card, variant: @gift_card.variant, price: @gift_card.variant.price)
           order.update_totals
           order.save!
-          # Save gift card
-          @gift_card.line_item = line_item
-          @gift_card.save!
+          @gift_card.update!(line_item: line_item)
         end
+
         redirect_to cart_path
       rescue ActiveRecord::RecordInvalid
-        find_gift_card_variants
-        render :action => :new
+        @gift_card_variants = gift_card_variants
+        render :new
       end
     end
 
@@ -85,25 +75,10 @@ module Spree
       redirect_to spree.login_path, notice: Spree.t(:login_required) unless current_spree_user
     end
 
-    def find_gift_card_variants
-      gift_card_product_ids = Product.not_deleted.where(is_gift_card: true).pluck(:id)
-      @gift_card_variants = Variant.joins(:prices).where(["amount > 0 AND product_id IN (?)", gift_card_product_ids]).order("amount")
-    end
-
-    def transfer_params
-      t_params = params.require(:gift_card).permit(:note, :email, :name, :transfer_amount)
-      t_params[:current_value] = t_params[:transfer_amount]
-      t_params[:original_value] = t_params[:transfer_amount]
-      t_params[:expiration_date] = @gift_card.expiration_date
-      set_user_in_params t_params
-      t_params
-    end
-
-    def set_user_in_params params_hash
-      if email = params_hash[:email]
-        user = Spree::User.where(email: email).first
-        params_hash[:user_id] = user ? user.id : nil
-      end
+    def gift_card_variants
+      Spree::Variant.joins(:product).
+        where(spree_products: { is_gift_card: true}).
+        joins(:prices).where("spree_prices.amount > 0")
     end
 
     def gift_card_params
