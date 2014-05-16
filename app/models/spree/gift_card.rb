@@ -16,7 +16,6 @@ module Spree
     belongs_to :line_item
 
     has_many :gift_card_transfers, class_name: "Spree::GiftCardTransfer", foreign_key: "source_id"
-    has_many :transactions, class_name: 'Spree::GiftCardTransaction'
     has_many :transferred_gift_cards, through: :gift_card_transfers, source: :destination
     has_one :origin, class_name: "Spree::GiftCardTransfer", foreign_key: "destination_id"
     has_one :calculator, class_name: "Spree::Calculator::GiftCard", as: :calculable
@@ -86,9 +85,6 @@ module Spree
 
     def debit(amount, order)
       raise 'Cannot debit gift card by amount greater than current value.' if (self.current_value - amount.to_f.abs) < 0
-      transaction = self.transactions.build
-      transaction.amount = amount
-      transaction.order  = order
       self.current_value = self.current_value - amount.abs
       self.save
     end
