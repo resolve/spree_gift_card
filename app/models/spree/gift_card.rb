@@ -40,10 +40,13 @@ module Spree
     attr_accessor :transfer_amount
 
     cattr_accessor :code_generator
+    cattr_accessor :default_expiration_period
     self.code_generator = Spree::GiftCard::Code
+    # Default to two years
+    self.default_expiration_period = 730
 
     def self.default_expiration_date
-      Spree::Config.gc_default_expiration_days.days.from_now
+      default_expiration_period.days.from_now
     end
 
     def self.sortable_attributes
