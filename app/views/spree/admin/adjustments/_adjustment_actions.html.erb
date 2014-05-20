@@ -3,7 +3,7 @@
   <%= link_to_delete adjustment, no_text: true %>
 
   <% if adjustment.source_type == "Spree::GiftCard" %>
-    <%= link_to_with_icon 'reply-all',
+    <%= link_to_with_icon 'icon-reply-all',
       Spree.t(:refund_gc),
       refund_gc_admin_adjustment_path(order_id: @order.to_param, id: adjustment.to_param),
       method: :post,
