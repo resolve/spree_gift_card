@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Spree::GiftCard do
-  it {should have_many(:transactions)}
-
   it {should validate_presence_of(:current_value)}
   it {should validate_numericality_of(:current_value).is_greater_than_or_equal_to(0)}
   it {should validate_presence_of(:email)}
@@ -325,14 +323,10 @@ describe Spree::GiftCard do
       }.should raise_error
     end
 
-    it 'should subtract used amount from the current value and create a transaction' do
+    it 'should subtract used amount from the current value' do
       gift_card.debit(-25, order)
-      gift_card.reload # reload to ensure accuracy
+      gift_card.reload
       gift_card.current_value.to_f.should eql(0.0)
-      transaction = gift_card.transactions.first
-      transaction.amount.to_f.should eql(-25.0)
-      transaction.gift_card.should eql(gift_card)
-      transaction.order.should eql(order)
     end
   end
 

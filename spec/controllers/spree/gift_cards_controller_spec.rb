@@ -96,10 +96,6 @@ describe Spree::GiftCardsController do
           should render_template :send_to_friend
         end
 
-        it "sets the error flash" do
-          expect(flash[:error]).to eql(Spree.t(:insufficient_balance))
-        end
-
         it "doesn't change the original gift card" do
           expect(card.reload.current_value).to eq 1.0
         end

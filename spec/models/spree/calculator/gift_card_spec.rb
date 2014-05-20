@@ -47,7 +47,7 @@ describe Spree::Calculator::GiftCard do
     context "when updating the order after it has changed totals" do
       let(:gc) { create :gift_card, current_value: 180 }
 
-      it "increases its value applied if the orders total is increased", focus: true do
+      it "increases its value applied if the orders total is increased" do
         order.adjustments.create!(label: "increase", amount: 20)
         order.update_totals
         expect(subject).to eql(-170.0)
