@@ -7,7 +7,7 @@ module Spree
 
     acts_as_paranoid
 
-    include Spree::Core::CalculatedAdjustments
+    include Spree::CalculatedAdjustments
 
     UNACTIVATABLE_ORDER_STATES = ["complete", "awaiting_return", "returned"]
 
